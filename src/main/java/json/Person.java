@@ -9,6 +9,7 @@ public class Person {
     private Date dob;
     private List<Person> relatives;
 
+
     public Person(String name, Date date_of_birth,List<Person> relatives){
         dob = date_of_birth;
         this.name = name;
