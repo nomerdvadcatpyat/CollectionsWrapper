@@ -1,17 +1,18 @@
 
 
-import wrappers.collections.ListWrapper;
-
-import java.io.File;
+import java.io.*;
 import java.util.*;
 
 public class Program {
     public static void main(String[] args) {
         try {
-            List<String> list = new ListWrapper<>(new LinkedList<>(),new File("./src/main/resources/second.json"));
 
-            list.forEach(System.out::println);
 
+            Person a = new Person("First",new Date(786317162378L));
+            ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(new File("./src/main/resources/file.txt"))));
+
+            oos.writeObject(a);
+            oos.close();
 
 
 

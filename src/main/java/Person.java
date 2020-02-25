@@ -1,16 +1,17 @@
-package json;
-
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Person {
+public class Person implements Serializable{
     private String name;
     private Date dob;
     private List<Person> relatives;
 
+    public Person() {
+    }
 
-    public Person(String name, Date date_of_birth,List<Person> relatives){
+    public Person(String name, Date date_of_birth, List<Person> relatives){
         dob = date_of_birth;
         this.name = name;
         this.relatives = relatives;

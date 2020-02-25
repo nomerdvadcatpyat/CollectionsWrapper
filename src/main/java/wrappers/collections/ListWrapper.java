@@ -19,8 +19,9 @@ public class ListWrapper<T> implements List<T> {
         gson = new Gson();
         Type itemsListType = new TypeToken<List<T>>() {}.getType();
 
-        if(file.exists())
-                this.list = gson.fromJson(ContainerIO.read(file), itemsListType);
+        if(file.exists()) {
+            this.list = gson.fromJson(ContainerIO.read(file), itemsListType);
+        }
     }
 
     private void write() {
