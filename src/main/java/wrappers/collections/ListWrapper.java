@@ -1,35 +1,47 @@
 package wrappers.collections;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import wrappers.ContainerIO;
+import streams.ObjectStreamCreator;
 
 import java.io.*;
-import java.lang.reflect.Type;
 import java.util.*;
 
-public class ListWrapper<T> implements List<T> {
+public class ListWrapper<T extends Serializable> implements List<T>, AutoCloseable {
     private List<T> list;
     private File file;
-    private Gson gson;
 
-    public ListWrapper(List<T> list, File file) throws IOException {
+    /* Нужно как-то сделать, чтобы при создании нового объекта коллекции на основе этого же файла
+    все изменения из этой коллекции сохранялись туда */
+    public ListWrapper(List<T> list, File file) {
+        // Добавить проверку буфера, что в нем ничего не лежит, если лежит, то вытащить все оттуда
         this.list = list;
         this.file = file;
-        gson = new Gson();
-        Type itemsListType = new TypeToken<List<T>>() {}.getType();
 
         if(file.exists()) {
-            this.list = gson.fromJson(ContainerIO.read(file), itemsListType);
+            try (
+                    ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))
+                    ){
+                while (ois.available() > 0) {
+                    int e = ois.readInt();
+                    list.add((T) ois.readObject());
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
+
     }
 
     private void write() {
-        try(  FileWriter fileWriter = new FileWriter(file) ) {
-            /* Наверное плохо обрабатывать трайкетчем здесь и нужно прокидывать иоексепшн, но тогда в add компилятор будет ругаться
-             * потому что метод не такой же как и в арейлисте */
-            String s = gson.toJson(list);
-            fileWriter.write(s);
+        try(
+                ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
+                //PrintWriter pw = new PrintWriter(new FileWriter(file))
+        ) {
+            //pw.println(list.size());
+            for (int i = 0; i < list.size(); i++) {
+                oos.writeInt(i);
+                oos.writeObject(list.get(i));
+                //pw.println();
+            }
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -40,7 +52,15 @@ public class ListWrapper<T> implements List<T> {
     @Override
     public boolean add(T t) {
         list.add(t);
-        write();
+        // В файл добавить индекс list.size() и последний элемент через oos
+        try (
+                ObjectOutputStream oos = ObjectStreamCreator.createStream(file)
+                ){
+            oos.writeInt(list.size());
+            oos.writeObject(t);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return true;
     }
 
@@ -170,5 +190,10 @@ public class ListWrapper<T> implements List<T> {
     @Override
     public List<T> subList(int fromIndex, int toIndex) {
         return list.subList(fromIndex,toIndex);
+    }
+
+    @Override
+    public void close() throws Exception {
+
     }
 }

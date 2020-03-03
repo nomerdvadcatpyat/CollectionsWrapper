@@ -1,5 +1,7 @@
 
 
+import wrappers.collections.ListWrapper;
+
 import java.io.*;
 import java.util.*;
 
@@ -9,10 +11,15 @@ public class Program {
 
 
             Person a = new Person("First",new Date(786317162378L));
-            ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(new File("./src/main/resources/file.txt"))));
+            Person qwe = new Person("asdasd",new Date(7318731827L));
+            Person b = new Person("B",new Date(7146237211L*1000));
 
-            oos.writeObject(a);
-            oos.close();
+            List<Person> list = new ListWrapper<>(new ArrayList<>(),new File("./src/main/resources/test"));
+/*            list.add(a);
+            list.add(qwe);
+            list.add(b);*/
+            //System.out.println(list.size());
+            list.forEach(System.out::println);
 
 
 
