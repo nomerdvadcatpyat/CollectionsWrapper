@@ -44,6 +44,6 @@ public class Person implements Serializable{
 
     @Override
     public String toString() {
-        return String.format("Name: %s, Date of Birth: %tD", name, dob);
+        return String.format("Name: %s, Date of Birth: %tD, relatives: "+ relatives , name, dob);
     }
 }

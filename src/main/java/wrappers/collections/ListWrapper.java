@@ -1,128 +1,121 @@
 package wrappers.collections;
 
-import streams.ObjectStreamCreator;
-
 import java.io.*;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.*;
 
-public class ListWrapper<T extends Serializable> implements List<T>, AutoCloseable {
+public class ListWrapper<T extends Serializable> implements List<T> {
     private List<T> list;
-    private File file;
+    private static Set<String> firstPathsInProgram = new HashSet<>();
+    private CollectionFilesManager<T> manager;
 
-    /* Нужно как-то сделать, чтобы при создании нового объекта коллекции на основе этого же файла
-    все изменения из этой коллекции сохранялись туда */
-    public ListWrapper(List<T> list, File file) {
-        // Добавить проверку буфера, что в нем ничего не лежит, если лежит, то вытащить все оттуда
+    public ListWrapper(List<T> list, File firstFile) throws FileAlreadyExistsException {
         this.list = list;
-        this.file = file;
+        String firstPath = firstFile.getAbsolutePath();
 
-        if(file.exists()) {
-            try (
-                    ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))
-                    ){
-                while (ois.available() > 0) {
-                    int e = ois.readInt();
-                    list.add((T) ois.readObject());
-                }
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
+        // Если с этим файлом уже связан какой-то лист, то выкинуть ошибку
+        if (firstPathsInProgram.contains(firstPath)) {
+            throw new FileAlreadyExistsException(firstPath, "", "This file is already connect with other collection");
+        } else firstPathsInProgram.add(firstPath);
 
-    }
-
-    private void write() {
-        try(
-                ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
-                //PrintWriter pw = new PrintWriter(new FileWriter(file))
-        ) {
-            //pw.println(list.size());
-            for (int i = 0; i < list.size(); i++) {
-                oos.writeInt(i);
-                oos.writeObject(list.get(i));
-                //pw.println();
-            }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        manager = new CollectionFilesManager<T>(firstPath);
+        if(firstFile.exists())
+            manager.loadCollection(list);
     }
 
     // Методы, работающие с файлами
     @Override
     public boolean add(T t) {
         list.add(t);
-        // В файл добавить индекс list.size() и последний элемент через oos
-        try (
+        manager.addInEnd(list,t);
+/*        try (
                 ObjectOutputStream oos = ObjectStreamCreator.createStream(file)
-                ){
-            oos.writeInt(list.size());
+        ) {
             oos.writeObject(t);
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
         return true;
+    }
+
+    private void write(File file) {
+        try (
+                ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
+        ) {
+            for (T t : list) oos.writeObject(t);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public boolean remove(Object o) {
         list.remove(o);
-        write();
+        File file = manager.getFileWithElement(list.indexOf(o));
+        write(file);
         return true;
     }
 
     @Override
+    public T remove(int index) {
+        T value = list.remove(index);
+        File file = manager.getFileWithElement(index);
+        write(file);
+        return value;
+    }
+
+    // по аналогии с верхними сделать
+    @Override
     public boolean addAll(Collection<? extends T> c) {
         list.addAll(c);
-        write();
+        manager.addAllInEnd(c);
+        // при адолл и ремуволл текущий подсчет элементов в ласт файле в CollectionFilesStorage.update хуевый
+        // так как тут мы можем закинуть сразу много элементов, сразу на несколько файлов, а не как при адд и ремув по одному
+        // потом переделаю
+        // В ПРИНЦИПЕ МОЖНО ТУТ ФОРИЧЕМ ВЫЗЫВАТЬ АДД А В РЕМУВОЛЛ ВЫЗЫВАТЬ РЕМУВ НО ХЗ
+       // write();
+
         return true;
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
-        list.addAll(index,c);
-        write();
+        list.addAll(index, c);
+       // write();
         return true;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
         list.removeAll(c);
-        write();
+       // write();
         return true;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
         list.retainAll(c);
-        write();
+        //write();
         return true;
     }
 
     @Override
     public void clear() {
         list.clear();
-        write();
+        //write();
     }
 
     @Override
     public T set(int index, T element) {
-        T value = list.set(index,element);
-        write();
+        T value = list.set(index, element);
+       // write();
         return value;
     }
 
     @Override
     public void add(int index, T element) {
-        list.add(index,element);
-        write();
-    }
-
-    @Override
-    public T remove(int index) {
-        T value = list.remove(index);
-        write();
-        return value;
+        list.add(index, element);
+       // write();
     }
 
 
@@ -189,11 +182,7 @@ public class ListWrapper<T extends Serializable> implements List<T>, AutoCloseab
 
     @Override
     public List<T> subList(int fromIndex, int toIndex) {
-        return list.subList(fromIndex,toIndex);
+        return list.subList(fromIndex, toIndex);
     }
 
-    @Override
-    public void close() throws Exception {
-
-    }
 }
