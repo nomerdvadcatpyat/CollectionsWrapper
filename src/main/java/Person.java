@@ -5,20 +5,17 @@ import java.util.List;
 
 public class Person implements Serializable{
     private String name;
-    private Date dob;
     private List<Person> relatives;
 
     public Person() {
     }
 
-    public Person(String name, Date date_of_birth, List<Person> relatives){
-        dob = date_of_birth;
+    public Person(String name, List<Person> relatives){
         this.name = name;
         this.relatives = relatives;
     }
 
-    public Person(String name, Date date_of_birth){
-        dob = date_of_birth;
+    public Person(String name){
         this.name = name;
         relatives = new ArrayList<>();
     }
@@ -38,12 +35,9 @@ public class Person implements Serializable{
         return name;
     }
 
-    public Date getDob() {
-        return dob;
-    }
 
     @Override
     public String toString() {
-        return String.format("Name: %s, Date of Birth: %tD, relatives: "+ relatives , name, dob);
+        return String.format("Name: %s, Date of Birth:, relatives: "+ relatives , name);
     }
 }

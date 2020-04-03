@@ -9,7 +9,7 @@ import java.io.ObjectOutputStream;
 
 public class ObjectStreamCreator {
     public static ObjectOutputStream createStream(File file) throws IOException {
-        return file.exists()
+        return file.exists() && file.length() != 0
                 ? new AppendingObjectOutputStream(new FileOutputStream(file, true))
                 : new ObjectOutputStream(new FileOutputStream(file, true));
     }

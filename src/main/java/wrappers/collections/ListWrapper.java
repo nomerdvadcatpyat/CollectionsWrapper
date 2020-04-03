@@ -1,13 +1,15 @@
 package wrappers.collections;
 
-import java.io.*;
+import java.io.File;
+import java.io.Serializable;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.*;
 
 public class ListWrapper<T extends Serializable> implements List<T> {
-    private List<T> list;
-    private static Set<String> firstPathsInProgram = new HashSet<>();
-    private CollectionFilesManager<T> manager;
+    private List<T> list; // внутренняя реализация листа
+    private static Set<String> firstPathsInProgram = new HashSet<>(); /* пути к файлам, к которым уже присоеденены листы в текущей сессии
+    скорее всего нужно обобщить для всех коллекций и перенести в CFM*/
+    private CollectionFilesManager<T> manager; // менеджер для обновления файлов коллекции
 
     public ListWrapper(List<T> list, File firstFile) throws FileAlreadyExistsException {
         this.list = list;
@@ -18,77 +20,55 @@ public class ListWrapper<T extends Serializable> implements List<T> {
             throw new FileAlreadyExistsException(firstPath, "", "This file is already connect with other collection");
         } else firstPathsInProgram.add(firstPath);
 
-        manager = new CollectionFilesManager<T>(firstPath);
-        if(firstFile.exists())
+        manager = new CollectionFilesManager<>(firstPath);
+        if (firstFile.exists()) // если существует главный файл коллекции, то загрузить коллекцию
             manager.loadCollection(list);
     }
 
     // Методы, работающие с файлами
     @Override
     public boolean add(T t) {
-        list.add(t);
-        manager.addInEnd(list,t);
-/*        try (
-                ObjectOutputStream oos = ObjectStreamCreator.createStream(file)
-        ) {
-            oos.writeObject(t);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-        return true;
-    }
-
-    private void write(File file) {
-        try (
-                ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
-        ) {
-            for (T t : list) oos.writeObject(t);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        list.remove(o);
-        File file = manager.getFileWithElement(list.indexOf(o));
-        write(file);
+        list.add(t); // добавить во внутр коллекцию
+        manager.addInEnd(list, t); //
         return true;
     }
 
     @Override
-    public T remove(int index) {
-        T value = list.remove(index);
-        File file = manager.getFileWithElement(index);
-        write(file);
-        return value;
+    public void add(int index, T element) {
+        list.add(index, element);
+        manager.addFromIndex(list, index);
     }
 
-    // по аналогии с верхними сделать
     @Override
     public boolean addAll(Collection<? extends T> c) {
         list.addAll(c);
-        manager.addAllInEnd(c);
-        // при адолл и ремуволл текущий подсчет элементов в ласт файле в CollectionFilesStorage.update хуевый
-        // так как тут мы можем закинуть сразу много элементов, сразу на несколько файлов, а не как при адд и ремув по одному
-        // потом переделаю
-        // В ПРИНЦИПЕ МОЖНО ТУТ ФОРИЧЕМ ВЫЗЫВАТЬ АДД А В РЕМУВОЛЛ ВЫЗЫВАТЬ РЕМУВ НО ХЗ
-       // write();
-
+        manager.addAllInEnd(list, c);
         return true;
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
         list.addAll(index, c);
-       // write();
+        // write();
         return true;
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        list.remove(o);
+        return true;
+    }
+
+    @Override
+    public T remove(int index) {
+        T value = list.remove(index);
+        return value;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
         list.removeAll(c);
-       // write();
+        // write();
         return true;
     }
 
@@ -108,14 +88,8 @@ public class ListWrapper<T extends Serializable> implements List<T> {
     @Override
     public T set(int index, T element) {
         T value = list.set(index, element);
-       // write();
+        // write();
         return value;
-    }
-
-    @Override
-    public void add(int index, T element) {
-        list.add(index, element);
-       // write();
     }
 
 
