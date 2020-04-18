@@ -7,89 +7,84 @@ import java.util.*;
 
 public class ListWrapper<T extends Serializable> implements List<T> {
     private List<T> list; // внутренняя реализация листа
-    private static Set<String> firstPathsInProgram = new HashSet<>(); /* пути к файлам, к которым уже присоеденены листы в текущей сессии
-    скорее всего нужно обобщить для всех коллекций и перенести в CFM*/
     private CollectionFilesManager<T> manager; // менеджер для обновления файлов коллекции
 
-    public ListWrapper(List<T> list, File firstFile) throws FileAlreadyExistsException {
+    public ListWrapper(List<T> list, File directory, String prefix) throws FileAlreadyExistsException {
         this.list = list;
-        String firstPath = firstFile.getAbsolutePath();
-
-        // Если с этим файлом уже связан какой-то лист, то выкинуть ошибку
-        if (firstPathsInProgram.contains(firstPath)) {
-            throw new FileAlreadyExistsException(firstPath, "", "This file is already connect with other collection");
-        } else firstPathsInProgram.add(firstPath);
-
-        manager = new CollectionFilesManager<>(firstPath);
-        if (firstFile.exists()) // если существует главный файл коллекции, то загрузить коллекцию
-            manager.loadCollection(list);
+        manager = new CollectionFilesManager<>(list, directory, prefix, 5);
     }
 
     // Методы, работающие с файлами
     @Override
     public boolean add(T t) {
+        int lastSize = list.size();
         list.add(t); // добавить во внутр коллекцию
-        manager.addInEnd(list, t); //
+        manager.addInEnd(list, lastSize);
         return true;
     }
 
     @Override
     public void add(int index, T element) {
         list.add(index, element);
-        manager.addFromIndex(list, index);
+        ArrayList<T> newCollection = new ArrayList<>();
+        newCollection.add(element);
+        manager.add(index, list, newCollection);
     }
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
+        int lastSize = list.size();
         list.addAll(c);
-        manager.addAllInEnd(list, c);
+        manager.addInEnd(list, lastSize);
         return true;
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
         list.addAll(index, c);
-        // write();
-        return true;
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        list.remove(o);
+        manager.add(index, list, c);
         return true;
     }
 
     @Override
     public T remove(int index) {
         T value = list.remove(index);
+        manager.remove(index, list);
         return value;
     }
 
     @Override
-    public boolean removeAll(Collection<?> c) {
-        list.removeAll(c);
-        // write();
-        return true;
-    }
-
-    @Override
-    public boolean retainAll(Collection<?> c) {
-        list.retainAll(c);
-        //write();
+    public boolean remove(Object o) {
+        list.remove(o);
+        list.forEach(System.out::println);
+        //manager.removeAll(list);
         return true;
     }
 
     @Override
     public void clear() {
         list.clear();
-        //write();
+        manager.clear();
     }
 
     @Override
     public T set(int index, T element) {
         T value = list.set(index, element);
-        // write();
+        manager.set(index, list);
         return value;
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        list.removeAll(c);
+        manager.removeAll(list);
+        return true;
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        list.retainAll(c);
+        return true;
     }
 
 

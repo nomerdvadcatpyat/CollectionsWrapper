@@ -1,18 +1,18 @@
 
 
+import wrappers.Person;
 import wrappers.collections.ListWrapper;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Program {
     public static void main(String[] args) throws FileAlreadyExistsException {
-        ListWrapper<Person> list = new ListWrapper<>(new ArrayList<>(), new File("./src/main/resources/test"));
+        List<Person> list = new ListWrapper<>(new ArrayList<>(), new File("./src/main/resources"), "test");
         Person first = new Person("first");
         Person second = new Person("second");
         Person third = new Person("third");
@@ -20,31 +20,43 @@ public class Program {
         Person fifth = new Person("fifth");
         Person sixth = new Person("sixth");
 
+
+//        List<String> list2 = new ArrayList<>();
+//        list2.add("asdasd");
+//        list2.add("123");
+//        list2.add("321");
+
+//        for(int i = 0; i< 3;i++)
+//        list.addAll(list2);
+
         List<Person> list1 = new ArrayList();
+        list1.add(first);
+        list1.add(second);
+        list1.add(third);
+        list1.add(fourth);
         list1.add(fifth);
         list1.add(sixth);
 
-        System.out.println(list.size());
 
-            list.add(second);
+
+
+//        list.removeAll(list1);
+
+
+//        list.add(10,fourth);
+
 //        for (int i = 0; i < 5; i++)
-//            list.add(second);
-
-//        for(int i = 0; i< 6; i++)
-//            list.add(6,first);
-        //list.add(third);
+//            list.remove(5);
 
 
-        int i = 0;
-        System.out.println(list.size());
-        for (Person pa :
-                list) {
-            System.out.println(pa);
-            System.out.println(i++);
-        }
+        // пока что пустые файлы не удаляются, нужно будет сделать
+        // нужно подумать о том че будет при удалении мейн файла
+        System.out.println("\nFinally:");
+        list.forEach(System.out::println);
+
 
     }
 
 
-
 }
+
