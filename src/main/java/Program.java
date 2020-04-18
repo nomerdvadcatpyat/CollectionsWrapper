@@ -12,13 +12,22 @@ import java.util.Set;
 
 public class Program {
     public static void main(String[] args) throws FileAlreadyExistsException {
-        ListWrapper<Person> list = new ListWrapper<>(new ArrayList<>(), new File("./src/main/resources"), "test");
+        List<Person> list = new ListWrapper<>(new ArrayList<>(), new File("./src/main/resources"), "test");
         Person first = new Person("first");
         Person second = new Person("second");
         Person third = new Person("third");
         Person fourth = new Person("fourth");
         Person fifth = new Person("fifth");
         Person sixth = new Person("sixth");
+
+
+//        List<String> list2 = new ArrayList<>();
+//        list2.add("asdasd");
+//        list2.add("123");
+//        list2.add("321");
+
+//        for(int i = 0; i< 3;i++)
+//        list.addAll(list2);
 
         List<Person> list1 = new ArrayList();
         list1.add(first);
@@ -28,20 +37,11 @@ public class Program {
         list1.add(fifth);
         list1.add(sixth);
 
-        //list.set(6,third);
 
-//        list.addAll(0,list1);
 
-//        list.add(second);
-//        for (int i = 0; i < 2; i++)
-//            list.add(4,new wrappers.Person("test"));
 
-//        for(int i = 0; i< 5; i++)
-//            list.add(first);
-//        list.add(third);
-//        list.add(second);
-//
-//        list.remove(6);
+//        list.removeAll(list1);
+
 
 //        list.add(10,fourth);
 
@@ -49,17 +49,14 @@ public class Program {
 //            list.remove(5);
 
 
-
         // пока что пустые файлы не удаляются, нужно будет сделать
         // нужно подумать о том че будет при удалении мейн файла
-        int i = 0;
-        for (Person pa :
-                list) {
-            System.out.println(pa);
-            System.out.println(i++);
-        }
+        System.out.println("\nFinally:");
+        list.forEach(System.out::println);
+
 
     }
 
 
 }
+

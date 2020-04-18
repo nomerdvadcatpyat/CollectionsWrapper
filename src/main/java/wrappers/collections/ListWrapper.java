@@ -11,15 +11,15 @@ public class ListWrapper<T extends Serializable> implements List<T> {
 
     public ListWrapper(List<T> list, File directory, String prefix) throws FileAlreadyExistsException {
         this.list = list;
-
         manager = new CollectionFilesManager<>(list, directory, prefix, 5);
     }
 
     // Методы, работающие с файлами
     @Override
     public boolean add(T t) {
+        int lastSize = list.size();
         list.add(t); // добавить во внутр коллекцию
-        manager.addInEnd(list, list.size() - 1);
+        manager.addInEnd(list, lastSize);
         return true;
     }
 
@@ -56,6 +56,8 @@ public class ListWrapper<T extends Serializable> implements List<T> {
     @Override
     public boolean remove(Object o) {
         list.remove(o);
+        list.forEach(System.out::println);
+        //manager.removeAll(list);
         return true;
     }
 
@@ -75,6 +77,7 @@ public class ListWrapper<T extends Serializable> implements List<T> {
     @Override
     public boolean removeAll(Collection<?> c) {
         list.removeAll(c);
+        manager.removeAll(list);
         return true;
     }
 

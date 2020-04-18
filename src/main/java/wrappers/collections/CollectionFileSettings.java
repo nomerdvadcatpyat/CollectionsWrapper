@@ -6,6 +6,16 @@ import java.io.Serializable;
 public class CollectionFileSettings implements Serializable {
     private File file;
     private int size = 0;
+    private int collectionHash = 0;
+
+    public int getCollectionHash() {
+        return collectionHash;
+    }
+
+    public void setCollectionHash(int collectionHash) {
+        this.collectionHash = collectionHash;
+    }
+
     public CollectionFileSettings(File file, int size){
         this.file = file;
         this.size = size;
