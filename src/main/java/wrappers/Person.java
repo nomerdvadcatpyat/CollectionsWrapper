@@ -1,7 +1,9 @@
+package wrappers;
+
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class Person implements Serializable{
     private String name;
@@ -39,5 +41,19 @@ public class Person implements Serializable{
     @Override
     public String toString() {
         return String.format("Name: %s, Date of Birth:, relatives: "+ relatives , name);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Person person = (Person) o;
+        return name.equals(person.name) &&
+                Objects.equals(relatives, person.relatives);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, relatives);
     }
 }
