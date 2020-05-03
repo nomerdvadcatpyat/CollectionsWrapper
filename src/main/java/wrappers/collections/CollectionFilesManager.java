@@ -118,47 +118,45 @@ public class CollectionFilesManager<T extends Serializable> {
             return;
         }
 
-        for (CollectionFileSettings cfs : filesSettingsCollection) {
-
-            List<T> subCollection = new ArrayList<>();
-            for (int i = 0; i < Math.min(cfs.getSize(), copyCollection.size()); i++) // subcol = copyCol(0..min(copyCol.size, cfs.getSize)
-                subCollection.add(copyCollection.get(i)); //subCollection.add(iterator.next()); // заполняем подколлекцию, размером либо с коллекцию в файле, либо с остаток в copyCol
-
-            if (cfs.getCollectionHash() != subCollection.hashCode()) {
-                System.out.println("хэши не совпали");
-                List<T> ccfs = loadSubCollection(cfs);
-                List<T> temp = new ArrayList<>();
-
-                for (int i = 0; i < subCollection.size(); i++) {
-
-                    while (!ccfs.isEmpty()) {
-                        if (subCollection.get(i).equals(ccfs.get(0))) {
-                            temp.add(ccfs.get(0));
-                            ccfs.remove(0);
-                            break;
-                        } else ccfs.remove(0);
-                    }
-
-                    if (ccfs.isEmpty() || i == subCollection.size() - 1) {
-                        fillFile(cfs, temp.iterator(), temp.size());
-                        copyCollection.subList(0, i).clear(); // тут либо + 1 либо нет залупа какая-то
-                        break;
-                    }
-                }
-            } else copyCollection.subList(0, subCollection.size()).clear();
-        }
+        for (CollectionFileSettings cfs : filesSettingsCollection)
+            checkDifference(copyCollection, cfs);
 
         // вызов этих 2 методов идет во всех методах, которые могут как-то повлиять на размер коллекции с файлами (удалить или добавить новый файл)
         optimizeFilesSettingsCollection();
         writeFilesSettingsCollection();
     }
 
-    public void retainAll() {
-
-    }
-
 
     // ВНУТРЕННИЕ МЕТОДЫ ДЛЯ РАБОТЫ С ФАЙЛАМИ КОЛЛЕКЦИИ
+
+    private void checkDifference(List<T> copyCollection, CollectionFileSettings cfs) {
+        List<T> subCollection = new ArrayList<>();
+        for (int i = 0; i < Math.min(cfs.getSize(), copyCollection.size()); i++) // subcol = copyCol(0..min(copyCol.size, cfs.getSize)
+            subCollection.add(copyCollection.get(i)); //subCollection.add(iterator.next()); // заполняем подколлекцию, размером либо с коллекцию в файле, либо с остаток в copyCol
+
+        if (cfs.getCollectionHash() != subCollection.hashCode()) {
+            System.out.println("хэши не совпали");
+            List<T> ccfs = loadSubCollection(cfs);
+            List<T> temp = new ArrayList<>();
+
+            for (int i = 0; i < subCollection.size(); i++) {
+
+                while (!ccfs.isEmpty()) {
+                    if (subCollection.get(i).equals(ccfs.get(0))) {
+                        temp.add(ccfs.get(0));
+                        ccfs.remove(0);
+                        break;
+                    } else ccfs.remove(0);
+                }
+
+                if (ccfs.isEmpty() || i == subCollection.size() - 1) {
+                    fillFile(cfs, temp.iterator(), temp.size());
+                    copyCollection.subList(0, i).clear(); // тут либо + 1 либо нет залупа какая-то
+                    break;
+                }
+            }
+        } else copyCollection.subList(0, subCollection.size()).clear();
+    }
 
     private CollectionFileSettings getLastCFS() {
         if (filesSettingsCollection.isEmpty()) addCFS();
@@ -167,10 +165,10 @@ public class CollectionFilesManager<T extends Serializable> {
 
     private void loadFullCollection(Collection<T> collection) {
         for (CollectionFileSettings cfs : filesSettingsCollection) {
-           // System.out.println("Load file " + cfs.getFile().getAbsolutePath() + " size " + cfs.getSize() + " hash " + cfs.getCollectionHash());
+            System.out.println("Load file " + cfs.getFile().getAbsolutePath() + " size " + cfs.getSize() + " hash " + cfs.getCollectionHash());
             collection.addAll(loadSubCollection(cfs));
         }
-       // System.out.println();
+        // System.out.println();
     }
 
     private List<T> loadSubCollection(CollectionFileSettings cfs) {
@@ -269,7 +267,7 @@ public class CollectionFilesManager<T extends Serializable> {
         cfs.setSize(fileCollection.size());
         cfs.setCollectionHash(fileCollection.hashCode());
 
-       // System.out.println("Filled file " + cfs.getFile().getAbsolutePath() + " size " + cfs.getSize() + " hash " + cfs.getCollectionHash());
+        // System.out.println("Filled file " + cfs.getFile().getAbsolutePath() + " size " + cfs.getSize() + " hash " + cfs.getCollectionHash());
     }
 }
 

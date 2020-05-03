@@ -1,97 +1,131 @@
 package wrappers.collections;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Queue;
+import java.io.File;
+import java.io.Serializable;
+import java.util.*;
 
-public class QueueWrapper<T> implements Queue<T> {
-    @Override
-    public int size() {
-        return 0;
-    }
+public class QueueWrapper<T extends Serializable> implements Queue<T> {
+    private Queue<T> queue; // внутренняя реализация очереди
+    private CollectionFilesManager<T> manager; // менеджер для обновления файлов коллекции
 
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public boolean contains(Object o) {
-        return false;
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return null;
-    }
-
-    @Override
-    public Object[] toArray() {
-        return new Object[0];
-    }
-
-    @Override
-    public <T1> T1[] toArray(T1[] a) {
-        return null;
+    public QueueWrapper(Queue<T> queue, File directory, String prefix) {
+        this.queue = queue;
+        manager = new CollectionFilesManager<>(queue, directory, prefix, 5);
     }
 
     @Override
     public boolean add(T t) {
-        return false;
+        int lastSize = queue.size();
+        queue.add(t); // добавить во внутр коллекцию
+        manager.addInEnd(queue, lastSize);
+        return true;
     }
 
     @Override
     public boolean remove(Object o) {
-        return false;
-    }
+        List<T> temp = new ArrayList<>(queue);
+        int index = temp.indexOf(o);
 
-    @Override
-    public boolean containsAll(Collection<?> c) {
-        return false;
+        queue.remove(o);
+
+        if (index == -1) return false;
+
+        manager.remove(index, queue);
+        return true;
     }
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        return false;
+        int lastSize = queue.size();
+        queue.addAll(c);
+        manager.addInEnd(queue, lastSize);
+        return true;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+        queue.removeAll(c);
+        manager.checkDifference(queue);
+        return true;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        return false;
-    }
-
-    @Override
-    public void clear() {
-
+        queue.retainAll(c);
+        manager.checkDifference(queue);
+        return true;
     }
 
     @Override
     public boolean offer(T t) {
-        return false;
+        queue.offer(t);
+        manager.addInEnd(queue, queue.size() - 1);
+        return true;
     }
 
     @Override
     public T remove() {
-        return null;
+        T value = queue.remove();
+        manager.remove(0, queue);
+        return value;
     }
 
     @Override
     public T poll() {
-        return null;
+        T value = queue.poll();
+        manager.remove(0, queue);
+        return value;
+    }
+
+    @Override
+    public void clear() {
+        queue.clear();
+        manager.checkDifference(queue);
+    }
+
+
+    @Override
+    public int size() {
+        return queue.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return queue.isEmpty();
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return queue.contains(o);
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return queue.iterator();
+    }
+
+    @Override
+    public Object[] toArray() {
+        return queue.toArray();
+    }
+
+    @Override
+    public <T1> T1[] toArray(T1[] a) {
+        return queue.toArray(a);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return queue.containsAll(c);
     }
 
     @Override
     public T element() {
-        return null;
+        return queue.element();
     }
 
     @Override
     public T peek() {
-        return null;
+        return queue.peek();
     }
 }

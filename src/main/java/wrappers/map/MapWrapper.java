@@ -1,34 +1,16 @@
 package wrappers.map;
 
+import wrappers.collections.CollectionFilesManager;
+
+import java.io.File;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
-public class MapWrapper< K, V > implements Map< K, V > {
-    @Override
-    public int size() {
-        return 0;
-    }
+public class MapWrapper< K extends Serializable, V extends Serializable > implements Map< K, V > {
 
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public boolean containsKey(Object key) {
-        return false;
-    }
-
-    @Override
-    public boolean containsValue(Object value) {
-        return false;
-    }
-
-    @Override
-    public V get(Object key) {
-        return null;
-    }
 
     @Override
     public V put(K key, V value) {
@@ -51,6 +33,11 @@ public class MapWrapper< K, V > implements Map< K, V > {
     }
 
     @Override
+    public V get(Object key) {
+        return null;
+    }
+
+    @Override
     public Set<K> keySet() {
         return null;
     }
@@ -63,5 +50,25 @@ public class MapWrapper< K, V > implements Map< K, V > {
     @Override
     public Set<Entry<K, V>> entrySet() {
         return null;
+    }
+
+    @Override
+    public int size() {
+        return 0;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    public boolean containsKey(Object key) {
+        return false;
+    }
+
+    @Override
+    public boolean containsValue(Object value) {
+        return false;
     }
 }

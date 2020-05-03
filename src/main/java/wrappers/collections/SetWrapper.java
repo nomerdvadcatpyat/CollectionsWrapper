@@ -1,72 +1,97 @@
 package wrappers.collections;
 
+import java.io.File;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
-public class SetWrapper<T> implements Set<T> {
-    @Override
-    public int size() {
-        return 0;
-    }
+public class SetWrapper<T extends Serializable> implements Set<T> {
+    private Set<T> set; // внутренняя реализация set
+    private CollectionFilesManager<T> manager; // менеджер для обновления файлов коллекции
 
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public boolean contains(Object o) {
-        return false;
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return null;
-    }
-
-    @Override
-    public Object[] toArray() {
-        return new Object[0];
-    }
-
-    @Override
-    public <T1> T1[] toArray(T1[] a) {
-        return null;
+    public SetWrapper(Set<T> set, File directory, String prefix) {
+        this.set = set;
+        manager = new CollectionFilesManager<>(set, directory, prefix, 5);
     }
 
     @Override
     public boolean add(T t) {
-        return false;
+        int lastSize = set.size();
+        set.add(t); // добавить во внутр коллекцию
+        manager.addInEnd(set, lastSize);
+        return true;
     }
 
     @Override
     public boolean remove(Object o) {
-        return false;
-    }
-
-    @Override
-    public boolean containsAll(Collection<?> c) {
-        return false;
+        set.remove(o);
+        manager.checkDifference(set);
+        return true;
     }
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        return false;
+        int lastSize = set.size();
+        set.addAll(c);
+        manager.addInEnd(set, lastSize);
+        return true;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        return false;
+        set.retainAll(c);
+        manager.checkDifference(set);
+        return true;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+        set.removeAll(c);
+        manager.checkDifference(set);
+        return true;
     }
 
     @Override
     public void clear() {
+        set.clear();
+        manager.checkDifference(set);
+    }
 
+
+
+    @Override
+    public int size() {
+        return set.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return set.isEmpty();
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return set.contains(o);
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return set.iterator();
+    }
+
+    @Override
+    public Object[] toArray() {
+        return set.toArray();
+    }
+
+    @Override
+    public <T1> T1[] toArray(T1[] a) {
+        return set.toArray(a);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return set.containsAll(c);
     }
 }

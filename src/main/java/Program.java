@@ -2,6 +2,8 @@
 
 import wrappers.Person;
 import wrappers.collections.ListWrapper;
+import wrappers.collections.QueueWrapper;
+import wrappers.collections.SetWrapper;
 
 import java.io.File;
 import java.nio.file.FileAlreadyExistsException;
@@ -9,52 +11,44 @@ import java.util.*;
 
 public class Program {
     public static void main(String[] args) throws FileAlreadyExistsException {
-        List<Person> list = new ListWrapper<>(new ArrayList<>(), new File("./src/main/resources"), "test");
-        Person first = new Person("first");
-        Person second = new Person("second");
-        Person third = new Person("third");
-        Person fourth = new Person("fourth");
-        Person fifth = new Person("fifth");
-        Person sixth = new Person("sixth");
+        List<String> list = new ListWrapper<>(new ArrayList<>(), new File("./src/main/resources"), "list");
 
+        Queue<String> queue = new QueueWrapper<>(new LinkedList<>(), new File("./src/main/resources"), "queue");
 
-//        List<String> list2 = new ArrayList<>();
-//        list2.add("asdasd");
-//        list2.add("123");
-//        list2.add("321");
-
-//        for(int i = 0; i< 3;i++)
-//        list.addAll(list2);
+//        Set<String> set = new SetWrapper<>(new HashSet<>(),new File("./src/main/resources"), "set");
+//
+//        set.add("aaa");
+//
+//        set.remove("aaa");
+//
 
 
 
-        List<Person> list1 = new ArrayList();
-        for (int i = 0; i < 10; i++) {
-            list1.add(fifth);
-        }
+//        ТЕСТ ОЧЕРЕДИ
+        for (int i = 0; i < 20; i++)
+            queue.add("asdasd");
+//
+        for (int i = 0; i < 19; i++)
+            queue.remove("asdasd"); // не удаляет последний оставшийся элемент.
 
-        long start = System.currentTimeMillis();
-
-//        list.addAll(list1);
-
-        list.clear();
-
-       // list1.subList(0,5).clear();
+        System.out.println(queue.size());
+        queue.forEach(System.out::println);
 
 
+        // ТЕСТ ЛИСТА
+//        List<String> list1 = new ArrayList<>();
+//        for (int i = 0; i < 20; i++) {
+//            list1.add("asjdasd");
+//            list1.add("asd");
+//            list1.add("aaa");
+//        }
 
-        long finish = System.currentTimeMillis();
-        System.out.println(finish - start);
+//        list.add(0,"asdadsadsa");
+//        list.removeAll(list1);
 
+//        System.out.println(list.size());
+//        list.forEach(System.out::println);
 
-
-        int c = 0;
-        for (Person p:
-             list) {
-            System.out.println(p + " " + c++);
-        }
     }
-
-
 }
 

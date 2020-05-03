@@ -4,14 +4,15 @@ import java.io.File;
 import java.io.Serializable;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class ListWrapper<T extends Serializable> extends AbstractList<T> implements List<T> {
     private List<T> list; // внутренняя реализация листа
     private CollectionFilesManager<T> manager; // менеджер для обновления файлов коллекции
 
-    public ListWrapper(List<T> list, File directory, String prefix) throws FileAlreadyExistsException {
+    public ListWrapper(List<T> list, File directory, String prefix) {
         this.list = list;
-        manager = new CollectionFilesManager<>(list, directory, prefix, 500);
+        manager = new CollectionFilesManager<>(list, directory, prefix, 5);
     }
 
     // Методы, работающие с файлами
@@ -55,9 +56,9 @@ public class ListWrapper<T extends Serializable> extends AbstractList<T> impleme
 
     @Override
     public boolean remove(Object o) {
-        list.remove(o);
-        list.forEach(System.out::println);
-        //manager.removeAll(list);
+        int index = list.indexOf(o);
+        if(index == -1) return false;
+        remove(index);
         return true;
     }
 
@@ -88,6 +89,11 @@ public class ListWrapper<T extends Serializable> extends AbstractList<T> impleme
         return true;
     }
 
+    @Override
+    public Stream<T> stream() {
+        System.out.println("хуй");
+        return null;
+    }
 
     // Методы, не работающие с файлами
     @Override
