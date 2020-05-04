@@ -168,7 +168,6 @@ public class CollectionFilesManager<T extends Serializable> {
             System.out.println("Load file " + cfs.getFile().getAbsolutePath() + " size " + cfs.getSize() + " hash " + cfs.getCollectionHash());
             collection.addAll(loadSubCollection(cfs));
         }
-        // System.out.println();
     }
 
     private List<T> loadSubCollection(CollectionFileSettings cfs) {

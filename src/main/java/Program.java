@@ -4,6 +4,7 @@ import wrappers.Person;
 import wrappers.collections.ListWrapper;
 import wrappers.collections.QueueWrapper;
 import wrappers.collections.SetWrapper;
+import wrappers.map.MapWrapper;
 
 import java.io.File;
 import java.nio.file.FileAlreadyExistsException;
@@ -25,14 +26,14 @@ public class Program {
 
 
 //        ТЕСТ ОЧЕРЕДИ
-        for (int i = 0; i < 20; i++)
-            queue.add("asdasd");
-//
-        for (int i = 0; i < 19; i++)
-            queue.remove("asdasd"); // не удаляет последний оставшийся элемент.
+//        for (int i = 0; i < 20; i++)
+//            queue.add("asdasd");
 
-        System.out.println(queue.size());
-        queue.forEach(System.out::println);
+//        for (int i = 0; i < 19; i++)
+//            queue.remove("asdasd"); // не удаляет последний оставшийся элемент.
+//
+//        System.out.println(queue.size());
+//        queue.forEach(System.out::println);
 
 
         // ТЕСТ ЛИСТА
@@ -48,6 +49,18 @@ public class Program {
 
 //        System.out.println(list.size());
 //        list.forEach(System.out::println);
+
+
+
+        // ТЕСТ МАПЫ
+
+        Map<String,Integer> a = new MapWrapper<>(new HashMap<>(),new File("./src/main/resources"), "map");
+
+        a.put("asdasd",1);
+        a.put("a",2);
+
+        a.keySet().forEach(System.out::println);
+        a.values().forEach(System.out::println);
 
     }
 }
