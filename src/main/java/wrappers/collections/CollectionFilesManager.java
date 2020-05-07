@@ -58,6 +58,7 @@ public class CollectionFilesManager<T extends Serializable> {
     public void add(int index, Collection<T> collection, Collection<? extends T> insertedCollection) { // НАПИСАТЬ remove(int index) и вернуться
 //        System.out.println("\nВставляем начиная с " + getCFSWithElement(index).getFile().getAbsolutePath());
 
+
         CollectionFileSettings cfs = getCFSWithElement(index);
         Iterator<T> iterator = collection.iterator();
         int sumOfPreviousFilesSizes = getSumOfPreviousFilesSizes(cfs);
@@ -106,7 +107,7 @@ public class CollectionFilesManager<T extends Serializable> {
         for (int i = 0; i < sumOfPreviousFilesSizes; i++)
             iterator.next();
 
-        fillFile(cfs, iterator, cfs.getSize() + 1);
+        fillFile(cfs, iterator, cfs.getSize());
     }
 
 
@@ -135,9 +136,12 @@ public class CollectionFilesManager<T extends Serializable> {
             subCollection.add(copyCollection.get(i)); //subCollection.add(iterator.next()); // заполняем подколлекцию, размером либо с коллекцию в файле, либо с остаток в copyCol
 
         if (cfs.getCollectionHash() != subCollection.hashCode()) {
-            System.out.println("хэши не совпали");
+//            System.out.println("хэши не совпали");
             List<T> ccfs = loadSubCollection(cfs);
             List<T> temp = new ArrayList<>();
+
+            if(subCollection.size() == 0)
+                cfs.setSize(0);
 
             for (int i = 0; i < subCollection.size(); i++) {
 
@@ -151,7 +155,7 @@ public class CollectionFilesManager<T extends Serializable> {
 
                 if (ccfs.isEmpty() || i == subCollection.size() - 1) {
                     fillFile(cfs, temp.iterator(), temp.size());
-                    copyCollection.subList(0, i).clear(); // тут либо + 1 либо нет залупа какая-то
+                    copyCollection.subList(0, temp.size()).clear(); // тут либо + 1 либо нет . В ремувол + 1 ( было i + 1, заменил на темп.size() )
                     break;
                 }
             }
@@ -165,7 +169,7 @@ public class CollectionFilesManager<T extends Serializable> {
 
     private void loadFullCollection(Collection<T> collection) {
         for (CollectionFileSettings cfs : filesSettingsCollection) {
-            System.out.println("Load file " + cfs.getFile().getAbsolutePath() + " size " + cfs.getSize() + " hash " + cfs.getCollectionHash());
+//            System.out.println("Load file " + cfs.getFile().getAbsolutePath() + " size " + cfs.getSize() + " hash " + cfs.getCollectionHash());
             collection.addAll(loadSubCollection(cfs));
         }
     }
@@ -202,7 +206,7 @@ public class CollectionFilesManager<T extends Serializable> {
         CollectionFileSettings res = null;
         for (CollectionFileSettings cfs : filesSettingsCollection) {
             sumOfCfsSizes += cfs.getSize();
-            if (sumOfCfsSizes > index) {
+            if (sumOfCfsSizes > index) { // нужно >=. Щас напишу на все тесты, исправлю.
                 res = cfs;
                 break;
             }
@@ -257,7 +261,8 @@ public class CollectionFilesManager<T extends Serializable> {
     private void fillFile(CollectionFileSettings cfs, Iterator<T> iterator, int upperBound) {
         List<T> fileCollection = new ArrayList<>();
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(cfs.getFile()))) {
-            for (int i = 0; i < upperBound && iterator.hasNext(); i++) fileCollection.add(iterator.next());
+            for (int i = 0; i < upperBound && iterator.hasNext(); i++)
+                fileCollection.add(iterator.next());
             oos.writeObject(fileCollection);
         } catch (IOException ex) {
             ex.printStackTrace();

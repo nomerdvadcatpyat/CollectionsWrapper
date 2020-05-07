@@ -10,19 +10,17 @@ public class MapWrapper<K extends Serializable, V extends Serializable> implemen
 
 
     private Map<K, V> map;
-    private Set<K> keySet;
-    private Collection<V> valueCol;
-    private CollectionFilesManager<K> keyManager;
-    private CollectionFilesManager<V> valueManager;
+    private List<SerializableEntry<K, V>> entries;
+
+
+    private CollectionFilesManager<SerializableEntry<K, V>> mapManager;
 
     public MapWrapper(Map<K, V> map, File directory, String prefix) {
+        entries = new ArrayList<>();
         this.map = map;
-        // Извлечь отдельно кол ключей и кол вэлью, сбиндить наверн как-то и юзать
-        keySet = map.keySet();
-        valueCol = map.values();
+        mapManager = new CollectionFilesManager<>(entries, directory, prefix, 5);
 
-        keyManager = new CollectionFilesManager<>(keySet, directory, prefix + "-keys", 5);
-        valueManager = new CollectionFilesManager<>(valueCol, directory, prefix + "-values", 5);
+        entries.forEach(e -> map.put(e.getKey(), e.getValue()));
     }
 
 
@@ -32,32 +30,30 @@ public class MapWrapper<K extends Serializable, V extends Serializable> implemen
 
         map.put(key, value);
 
-        keySet = map.keySet();
-        valueCol = map.values();
-
         int position = getPositionInKeySet(key);
+        SerializableEntry<K, V> newEntry = new SerializableEntry<>(key, value);
 
         if (t == null) {
-            keyManager.add(position, keySet, Collections.singletonList(key));
-            valueManager.add(position, valueCol, Collections.singletonList(value));
-            t = map.get(key);
+            entries.add(position, newEntry);
+            mapManager.add(position, entries, Collections.singletonList(newEntry));
         } else {
-            // нужно найти позицию ключа и позицию значения, затем перезаписать значение
-            valueManager.set(position, valueCol);
+            entries.set(position, newEntry);
+            mapManager.set(position, entries);
         }
-        return t;
+
+        return map.get(key);
     }
 
-    private int getPositionInKeySet(K key) {
-        int res = 0;
-        Iterator<K> iterator = keySet.iterator();
-        while (iterator.next() != key) res++;
-        return res;
-    }
 
     @Override
     public V remove(Object key) {
-        return null;
+        int position = getPositionInKeySet((K) key);
+        V t = map.remove(key);
+
+        entries.remove(position);
+        mapManager.remove(position, entries);
+
+        return t;
     }
 
     @Override
@@ -68,6 +64,15 @@ public class MapWrapper<K extends Serializable, V extends Serializable> implemen
     @Override
     public void clear() {
 
+    }
+
+    private int getPositionInKeySet(K key) {
+        int res = 0;
+        Iterator<K> iterator = map.keySet().iterator();
+        while (!iterator.next().equals(key)) {
+            res++;
+        }
+        return res;
     }
 
 
@@ -93,21 +98,26 @@ public class MapWrapper<K extends Serializable, V extends Serializable> implemen
 
     @Override
     public int size() {
-        return 0;
+        return map.size();
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return map.isEmpty();
     }
 
     @Override
     public boolean containsKey(Object key) {
-        return false;
+        return map.containsKey(key);
     }
 
     @Override
     public boolean containsValue(Object value) {
-        return false;
+        return map.containsValue(value);
+    }
+
+    @Override
+    public String toString() {
+        return map.toString();
     }
 }

@@ -89,12 +89,6 @@ public class ListWrapper<T extends Serializable> extends AbstractList<T> impleme
         return true;
     }
 
-    @Override
-    public Stream<T> stream() {
-        System.out.println("хуй");
-        return null;
-    }
-
     // Методы, не работающие с файлами
     @Override
     public int size() {
@@ -154,11 +148,6 @@ public class ListWrapper<T extends Serializable> extends AbstractList<T> impleme
     @Override
     public ListIterator<T> listIterator(int index) {
         return list.listIterator(index);
-    }
-
-    @Override
-    public List<T> subList(int fromIndex, int toIndex) {
-        return list.subList(fromIndex, toIndex);
     }
 
 }

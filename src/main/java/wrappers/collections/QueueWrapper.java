@@ -128,4 +128,9 @@ public class QueueWrapper<T extends Serializable> implements Queue<T> {
     public T peek() {
         return queue.peek();
     }
+
+    @Override
+    public String toString() {
+        return queue.toString();
+    }
 }

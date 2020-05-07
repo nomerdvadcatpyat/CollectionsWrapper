@@ -56,8 +56,14 @@ public class Program {
 
         Map<String,Integer> a = new MapWrapper<>(new HashMap<>(),new File("./src/main/resources"), "map");
 
-        a.put("asdasd",1);
-        a.put("a",2);
+//        a.put("asdasd",1);
+//        a.put("a",2);
+
+        for (int i = 0; i < 2; i++) {
+            a.put(i + "",i);
+        }
+
+
 
         a.keySet().forEach(System.out::println);
         a.values().forEach(System.out::println);

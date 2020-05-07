@@ -1,37 +1,36 @@
 package wrappers.map;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.util.Objects;
 
-public class SerializableEntry<K extends Serializable,V extends Serializable> implements Serializable, Map.Entry<K, V> {
-    private Map.Entry<K, V> entry;
+public class SerializableEntry<K extends Serializable,V extends Serializable> implements Serializable {
+    private K key;
+    private V value;
 
-    SerializableEntry(Map.Entry<K, V> entry) {
-        this.entry = entry;
+    SerializableEntry(K key, V value) {
+        this.key = key;
+        this.value = value;
     }
 
-    @Override
     public K getKey() {
-        return entry.getKey();
+        return key;
     }
 
-    @Override
     public V getValue() {
-        return entry.getValue();
-    }
-
-    @Override
-    public V setValue(V value) {
-        return entry.setValue(value);
+        return value;
     }
 
     @Override
     public boolean equals(Object o) {
-        return entry.equals(o);
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SerializableEntry<?, ?> that = (SerializableEntry<?, ?>) o;
+        return Objects.equals(key, that.key) &&
+                Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode() {
-        return entry.hashCode();
+        return Objects.hash(key, value);
     }
 }
