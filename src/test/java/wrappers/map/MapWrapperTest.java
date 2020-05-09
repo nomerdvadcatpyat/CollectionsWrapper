@@ -23,12 +23,12 @@ public class MapWrapperTest {
     }
 
     private void simpleFillMaps(Map<Person, String> equalsMap, Map<Person, String> wrapperMap) {
-//        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             PERSON_LIST.forEach(p -> {
                 equalsMap.put(p, p.getName());
                 wrapperMap.put(p, p.getName());
             });
-//        }
+        }
     }
 
     @Test
@@ -38,15 +38,47 @@ public class MapWrapperTest {
 
     @Test
     public void remove() {
+        for (int i = 0; i < 20; i++) {
+            equalsMap.remove(PERSON_LIST.get(0));
+            mapWrapper.remove(PERSON_LIST.get(0));
+        }
+
+        assertEquals(equalsMap.toString(), mapWrapper.toString());
     }
 
     @Test
     public void putAll() {
+        for (int i = 0; i < 20; i++) {
+            equalsMap.putAll(PERSON_MAP);
+            mapWrapper.putAll(PERSON_MAP);
+        }
+
+        assertEquals(equalsMap.toString(), mapWrapper.toString());
     }
 
     @Test
     public void clear() {
+        equalsMap.clear();
+        mapWrapper.clear();
+
+        assertEquals(equalsMap.toString(), mapWrapper.toString());
     }
+
+    @Test
+    public void combineTest() {
+        for (int i = 0; i < 6; i++) {
+            equalsMap.put(PERSON_LIST.get(i), i + "");
+            equalsMap.putAll(PERSON_MAP);
+            equalsMap.remove(PERSON_LIST.get(0));
+
+            mapWrapper.put(PERSON_LIST.get(i), i + "");
+            mapWrapper.putAll(PERSON_MAP);
+            mapWrapper.remove(PERSON_LIST.get(0));
+        }
+
+        assertEquals(equalsMap.toString(), mapWrapper.toString());
+    }
+
 
     @After
     public void checkLoad() {

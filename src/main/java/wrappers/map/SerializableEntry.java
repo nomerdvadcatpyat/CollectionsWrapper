@@ -25,12 +25,11 @@ public class SerializableEntry<K extends Serializable,V extends Serializable> im
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SerializableEntry<?, ?> that = (SerializableEntry<?, ?>) o;
-        return Objects.equals(key, that.key) &&
-                Objects.equals(value, that.value);
+        return Objects.equals(key, that.key);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(key, value);
+        return Objects.hash(key);
     }
 }

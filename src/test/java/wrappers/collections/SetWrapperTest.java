@@ -5,8 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import wrappers.Person;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static wrappers.WrappersTestsConstants.*;
@@ -24,8 +23,11 @@ public class SetWrapperTest {
 
     @Test
     public void add() {
-        equalsSet.add(PERSON_LIST.get(0));
-        setWrapper.add(PERSON_LIST.get(0));
+        for (int i = 0; i < 6; i++) {
+            equalsSet.add(PERSON_LIST.get(i));
+            setWrapper.add(PERSON_LIST.get(i));
+        }
+
         assertEquals(equalsSet.toString(), setWrapper.toString());
     }
 
@@ -75,6 +77,29 @@ public class SetWrapperTest {
         setWrapper.clear();
         assertEquals(equalsSet.toString(), setWrapper.toString());
     }
+
+    @Test
+    public void combineTest() {
+        List<Person> otherPersonList = Arrays.asList(new Person("asdas"), new Person("askdas"), new Person("sadads123"),
+                new Person("yhsaqiudyq"), new Person("18273sjaddas"), new Person("a123dasd"));
+
+        for (int i = 0; i < 6; i++) {
+            equalsSet.add(otherPersonList.get(i));
+            equalsSet.addAll(PERSON_LIST);
+            equalsSet.remove(PERSON_LIST.get(i));
+            equalsSet.removeAll(FIRST_THREE_PEOPLE);
+            equalsSet.retainAll(Arrays.asList(otherPersonList.get(3), otherPersonList.get(4)));
+
+            setWrapper.add(otherPersonList.get(i));
+            setWrapper.addAll(PERSON_LIST);
+            setWrapper.remove(PERSON_LIST.get(i));
+            setWrapper.removeAll(FIRST_THREE_PEOPLE);
+            setWrapper.retainAll(Arrays.asList(otherPersonList.get(3), otherPersonList.get(4)));
+        }
+
+        assertEquals(equalsSet.toString() , setWrapper.toString());
+    }
+
 
     @After
     public void checkLoad() {

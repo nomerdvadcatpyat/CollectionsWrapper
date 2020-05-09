@@ -3,6 +3,7 @@ package wrappers.collections;
 import org.junit.*;
 import wrappers.Person;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +26,9 @@ public class ListWrapperTest {
     @Test
     public void add() {
         simpleFillCollections(equalsList, listWrapper);
+
+        equalsList.add(PERSON_LIST.get(0));
+        listWrapper.add(PERSON_LIST.get(0));
 
         assertEquals(equalsList.toString() , listWrapper.toString());
     }
@@ -150,6 +154,7 @@ public class ListWrapperTest {
     public void combineTest() {
 
         for (int i = 0; i < 20; i++) {
+            equalsList.add(PERSON_LIST.get(0));
             equalsList.addAll(PERSON_LIST);
             equalsList.remove(0);
             equalsList.add(6, PERSON_LIST.get(2));
@@ -157,6 +162,7 @@ public class ListWrapperTest {
             equalsList.retainAll(Arrays.asList(PERSON_LIST.get(3), PERSON_LIST.get(4)));
             equalsList.addAll(4, PERSON_LIST);
 
+            listWrapper.add(PERSON_LIST.get(0));
             listWrapper.addAll(PERSON_LIST);
             listWrapper.remove(0);
             listWrapper.add(6, PERSON_LIST.get(2));

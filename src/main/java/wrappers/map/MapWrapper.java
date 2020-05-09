@@ -26,20 +26,17 @@ public class MapWrapper<K extends Serializable, V extends Serializable> implemen
 
     @Override
     public V put(K key, V value) {
-        V t = map.get(key);
-
-        map.put(key, value);
-
-        int position = getPositionInKeySet(key);
         SerializableEntry<K, V> newEntry = new SerializableEntry<>(key, value);
 
-        if (t == null) {
-            entries.add(position, newEntry);
-            mapManager.add(position, entries, Collections.singletonList(newEntry));
+        if (map.put(key, value) == null) {
+            entries.add(newEntry);
+            mapManager.addInEnd(entries, entries.size() - 1);
         } else {
-            entries.set(position, newEntry);
-            mapManager.set(position, entries);
+            int index = entries.indexOf(newEntry);
+            entries.set(index, newEntry); // equals у SerializableEntry сравнивает только по ключам
+            mapManager.set(index, entries);
         }
+
 
         return map.get(key);
     }
@@ -47,32 +44,43 @@ public class MapWrapper<K extends Serializable, V extends Serializable> implemen
 
     @Override
     public V remove(Object key) {
-        int position = getPositionInKeySet((K) key);
+        int index = entries.indexOf(new SerializableEntry<K, V>((K) key, null));
         V t = map.remove(key);
-
-        entries.remove(position);
-        mapManager.remove(position, entries);
-
+        if (t != null) {
+            entries.remove(index);
+            mapManager.remove(index, entries);
+        }
         return t;
     }
 
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
+        // изменить entries пробежавшись по m форичем и дальше отдельно добавить коллекцию новых и изменить коллекцию старых хз
+        Collection<SerializableEntry<K,V>> newEntries = new ArrayList<>();
 
+        m.forEach((k,v) -> {
+            SerializableEntry<K, V> newEntry = new SerializableEntry<>(k, v);
+
+            if (map.containsKey(k)) {
+                int index = entries.indexOf(newEntry);
+                entries.set(index,newEntry);
+                mapManager.set(index, entries);
+            }
+            else newEntries.add(newEntry);
+        });
+
+        map.putAll(m);
+
+        entries.addAll(newEntries);
+        mapManager.addInEnd(entries,entries.size() - newEntries.size());
     }
 
     @Override
     public void clear() {
+        map.clear();
+        entries.clear();
 
-    }
-
-    private int getPositionInKeySet(K key) {
-        int res = 0;
-        Iterator<K> iterator = map.keySet().iterator();
-        while (!iterator.next().equals(key)) {
-            res++;
-        }
-        return res;
+        mapManager.checkDifference(entries);
     }
 
 

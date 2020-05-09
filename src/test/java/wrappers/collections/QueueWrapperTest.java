@@ -114,11 +114,13 @@ public class QueueWrapperTest {
     @Test
     public void combineTest() {
         for (int i = 0; i < 20; i++) {
+            equalsQueue.add(PERSON_LIST.get(0));
             equalsQueue.addAll(PERSON_LIST);
             equalsQueue.remove(0);
             equalsQueue.removeAll(FIRST_THREE_PEOPLE);
             equalsQueue.retainAll(Arrays.asList(PERSON_LIST.get(3), PERSON_LIST.get(4)));
 
+            queueWrapper.add(PERSON_LIST.get(0));
             queueWrapper.addAll(PERSON_LIST);
             queueWrapper.remove(0);
             queueWrapper.removeAll(FIRST_THREE_PEOPLE);
