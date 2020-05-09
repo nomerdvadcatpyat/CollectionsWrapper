@@ -2,12 +2,16 @@ package wrappers.collections;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
 public class SetWrapper<T extends Serializable> implements Set<T> {
     private Set<T> set; // внутренняя реализация set
+    private Collection<T> setCollection = new ArrayList<>();
+    private int lastSize;
+
     private CollectionFilesManager<T> manager; // менеджер для обновления файлов коллекции
 
     public SetWrapper(Set<T> set, File directory, String prefix) {
@@ -17,38 +21,50 @@ public class SetWrapper<T extends Serializable> implements Set<T> {
 
     @Override
     public boolean add(T t) {
-        int lastSize = set.size();
-        set.add(t); // добавить во внутр коллекцию
-        manager.addInEnd(set, lastSize);
+        lastSize = set.size();
+        if(set.add(t)) {
+            setCollection.add(t);
+            manager.addInEnd(setCollection, lastSize);
+        }
         return true;
     }
 
     @Override
     public boolean remove(Object o) {
-        set.remove(o);
-        manager.checkDifference(set);
+        if(set.remove(o)) {
+            setCollection.remove(o);
+            manager.checkDifference(setCollection);
+        }
         return true;
     }
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        int lastSize = set.size();
-        set.addAll(c);
-        manager.addInEnd(set, lastSize);
+        lastSize = set.size();
+        if(set.addAll(c)) {
+            setCollection.addAll(c);
+            manager.addInEnd(setCollection, lastSize);
+        }
         return true;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        set.retainAll(c);
-        manager.checkDifference(set);
+        if(set.retainAll(c)) {
+            setCollection.retainAll(c);
+            manager.checkDifference(setCollection);
+        }
         return true;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
+        lastSize = set.size();
         set.removeAll(c);
-        manager.checkDifference(set);
+        if(set.size() != lastSize) {
+            setCollection.removeAll(c);
+            manager.checkDifference(setCollection);
+        }
         return true;
     }
 
@@ -62,6 +78,7 @@ public class SetWrapper<T extends Serializable> implements Set<T> {
 
     @Override
     public int size() {
+        lastSize = set.size();
         return set.size();
     }
 
@@ -93,5 +110,10 @@ public class SetWrapper<T extends Serializable> implements Set<T> {
     @Override
     public boolean containsAll(Collection<?> c) {
         return set.containsAll(c);
+    }
+
+    @Override
+    public String toString() {
+        return set.toString();
     }
 }

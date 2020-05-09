@@ -4,71 +4,128 @@ import wrappers.collections.CollectionFilesManager;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
-public class MapWrapper< K extends Serializable, V extends Serializable > implements Map< K, V > {
+public class MapWrapper<K extends Serializable, V extends Serializable> implements Map<K, V> {
+
+
+    private Map<K, V> map;
+    private List<SerializableEntry<K, V>> entries;
+
+
+    private CollectionFilesManager<SerializableEntry<K, V>> mapManager;
+
+    public MapWrapper(Map<K, V> map, File directory, String prefix) {
+        entries = new ArrayList<>();
+        this.map = map;
+        mapManager = new CollectionFilesManager<>(entries, directory, prefix, 5);
+
+        entries.forEach(e -> map.put(e.getKey(), e.getValue()));
+    }
 
 
     @Override
     public V put(K key, V value) {
-        return null;
+        SerializableEntry<K, V> newEntry = new SerializableEntry<>(key, value);
+
+        if (map.put(key, value) == null) {
+            entries.add(newEntry);
+            mapManager.addInEnd(entries, entries.size() - 1);
+        } else {
+            int index = entries.indexOf(newEntry);
+            entries.set(index, newEntry); // equals у SerializableEntry сравнивает только по ключам
+            mapManager.set(index, entries);
+        }
+
+
+        return map.get(key);
     }
+
 
     @Override
     public V remove(Object key) {
-        return null;
+        int index = entries.indexOf(new SerializableEntry<K, V>((K) key, null));
+        V t = map.remove(key);
+        if (t != null) {
+            entries.remove(index);
+            mapManager.remove(index, entries);
+        }
+        return t;
     }
 
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
+        // изменить entries пробежавшись по m форичем и дальше отдельно добавить коллекцию новых и изменить коллекцию старых хз
+        Collection<SerializableEntry<K,V>> newEntries = new ArrayList<>();
 
+        m.forEach((k,v) -> {
+            SerializableEntry<K, V> newEntry = new SerializableEntry<>(k, v);
+
+            if (map.containsKey(k)) {
+                int index = entries.indexOf(newEntry);
+                entries.set(index,newEntry);
+                mapManager.set(index, entries);
+            }
+            else newEntries.add(newEntry);
+        });
+
+        map.putAll(m);
+
+        entries.addAll(newEntries);
+        mapManager.addInEnd(entries,entries.size() - newEntries.size());
     }
 
     @Override
     public void clear() {
+        map.clear();
+        entries.clear();
 
+        mapManager.checkDifference(entries);
     }
+
 
     @Override
     public V get(Object key) {
-        return null;
+        return map.get(key);
     }
 
     @Override
     public Set<K> keySet() {
-        return null;
+        return map.keySet();
     }
 
     @Override
     public Collection<V> values() {
-        return null;
+        return map.values();
     }
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-        return null;
+        return map.entrySet();
     }
 
     @Override
     public int size() {
-        return 0;
+        return map.size();
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return map.isEmpty();
     }
 
     @Override
     public boolean containsKey(Object key) {
-        return false;
+        return map.containsKey(key);
     }
 
     @Override
     public boolean containsValue(Object value) {
-        return false;
+        return map.containsValue(value);
+    }
+
+    @Override
+    public String toString() {
+        return map.toString();
     }
 }
