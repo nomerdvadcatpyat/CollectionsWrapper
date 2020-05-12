@@ -30,11 +30,11 @@ public class MapWrapper<K extends Serializable, V extends Serializable> implemen
 
         if (map.put(key, value) == null) {
             entries.add(newEntry);
-            mapManager.addInEnd(entries, entries.size() - 1);
+            mapManager.addInEnd(newEntry);
         } else {
             int index = entries.indexOf(newEntry);
             entries.set(index, newEntry); // equals у SerializableEntry сравнивает только по ключам
-            mapManager.set(index, entries);
+            mapManager.set(index, newEntry);
         }
 
 
@@ -48,7 +48,7 @@ public class MapWrapper<K extends Serializable, V extends Serializable> implemen
         V t = map.remove(key);
         if (t != null) {
             entries.remove(index);
-            mapManager.remove(index, entries);
+            mapManager.remove(index);
         }
         return t;
     }
@@ -56,23 +56,22 @@ public class MapWrapper<K extends Serializable, V extends Serializable> implemen
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
         // изменить entries пробежавшись по m форичем и дальше отдельно добавить коллекцию новых и изменить коллекцию старых хз
-        Collection<SerializableEntry<K,V>> newEntries = new ArrayList<>();
+        Collection<SerializableEntry<K, V>> newEntries = new ArrayList<>();
 
-        m.forEach((k,v) -> {
+        m.forEach((k, v) -> {
             SerializableEntry<K, V> newEntry = new SerializableEntry<>(k, v);
 
             if (map.containsKey(k)) {
                 int index = entries.indexOf(newEntry);
-                entries.set(index,newEntry);
-                mapManager.set(index, entries);
-            }
-            else newEntries.add(newEntry);
+                entries.set(index, newEntry);
+                mapManager.set(index, newEntry);
+            } else newEntries.add(newEntry);
         });
 
         map.putAll(m);
 
         entries.addAll(newEntries);
-        mapManager.addInEnd(entries,entries.size() - newEntries.size());
+        mapManager.addAllInEnd(newEntries);
     }
 
     @Override
@@ -80,7 +79,7 @@ public class MapWrapper<K extends Serializable, V extends Serializable> implemen
         map.clear();
         entries.clear();
 
-        mapManager.checkDifference(entries);
+        mapManager.removeDifference(entries);
     }
 
 

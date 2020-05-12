@@ -110,6 +110,34 @@ public class QueueWrapperTest {
         assertEquals(equalsQueue.toString() , queueWrapper.toString());
     }
 
+    @Test
+    public void testIterator() {
+        Iterator<Person> eqIter = equalsQueue.iterator();
+        Iterator<Person> wrapIter = queueWrapper.iterator();
+
+        for (int i = 0; i < 11; i++) {
+            eqIter.next();
+            wrapIter.next();
+        }
+
+        while (wrapIter.hasNext()) {
+            eqIter.remove();
+            wrapIter.remove();
+
+            eqIter.next();
+            wrapIter.next();
+        }
+
+        assertEquals(equalsQueue.toString() , queueWrapper.toString());
+    }
+
+    @Test
+    public void removeIf() {
+        equalsQueue.removeIf(p -> p.getName().equals("first") || p.getName().equals("second"));
+        queueWrapper.removeIf(p -> p.getName().equals("first") || p.getName().equals("second"));
+
+        assertEquals(equalsQueue.toString() , queueWrapper.toString());
+    }
 
     @Test
     public void combineTest() {

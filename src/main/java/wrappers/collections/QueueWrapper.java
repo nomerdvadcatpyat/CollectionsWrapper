@@ -3,6 +3,8 @@ package wrappers.collections;
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class QueueWrapper<T extends Serializable> implements Queue<T> {
     private Queue<T> queue; // внутренняя реализация очереди
@@ -15,9 +17,8 @@ public class QueueWrapper<T extends Serializable> implements Queue<T> {
 
     @Override
     public boolean add(T t) {
-        int lastSize = queue.size();
         queue.add(t); // добавить во внутр коллекцию
-        manager.addInEnd(queue, lastSize);
+        manager.addInEnd(t);
         return true;
     }
 
@@ -30,57 +31,97 @@ public class QueueWrapper<T extends Serializable> implements Queue<T> {
 
         if (index == -1) return false;
 
-        manager.remove(index, queue);
+        manager.remove(index);
         return true;
     }
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        int lastSize = queue.size();
         queue.addAll(c);
-        manager.addInEnd(queue, lastSize);
+        manager.addAllInEnd(c);
         return true;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
         queue.removeAll(c);
-        manager.checkDifference(queue);
+        manager.removeDifference(queue);
         return true;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
         queue.retainAll(c);
-        manager.checkDifference(queue);
+        manager.removeDifference(queue);
         return true;
     }
 
     @Override
     public boolean offer(T t) {
         queue.offer(t);
-        manager.addInEnd(queue, queue.size() - 1);
+        manager.addInEnd(t);
         return true;
     }
 
     @Override
     public T remove() {
         T value = queue.remove();
-        manager.remove(0, queue);
+        manager.remove(0);
         return value;
     }
 
     @Override
     public T poll() {
         T value = queue.poll();
-        manager.remove(0, queue);
+        manager.remove(0);
         return value;
     }
 
     @Override
     public void clear() {
         queue.clear();
-        manager.checkDifference(queue);
+        manager.removeDifference(queue);
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new Itr();
+    }
+
+
+    private class Itr implements Iterator<T> {
+        Iterator<T> iterator = queue.iterator();
+        int c = -1;
+
+        @Override
+        public boolean hasNext() {
+            return iterator.hasNext();
+        }
+
+        @Override
+        public T next() {
+            c++;
+            return iterator.next();
+        }
+
+        @Override
+        public void remove() {
+            iterator.remove();
+            manager.remove(c--);
+        }
+
+        @Override
+        public void forEachRemaining(Consumer<? super T> action) {
+            iterator.forEachRemaining(action);
+            //manager.checkDifference(queue);
+        }
+    }
+
+    @Override
+    public boolean removeIf(Predicate<? super T> filter) {
+        boolean b = queue.removeIf(filter);
+        if (b) manager.removeDifference(queue);
+        return b;
     }
 
 
@@ -97,11 +138,6 @@ public class QueueWrapper<T extends Serializable> implements Queue<T> {
     @Override
     public boolean contains(Object o) {
         return queue.contains(o);
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return queue.iterator();
     }
 
     @Override

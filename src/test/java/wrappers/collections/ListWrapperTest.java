@@ -4,8 +4,7 @@ import org.junit.*;
 import wrappers.Person;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -35,20 +34,28 @@ public class ListWrapperTest {
 
     @Test
     public void addByIndex() {
-        PERSON_LIST.forEach(p -> {
-            equalsList.add(0, p);
-            listWrapper.add(0, p);
-        });
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 2; j++) {
+                equalsList.add(0,PERSON_LIST.get(0));
+                listWrapper.add(0,PERSON_LIST.get(0));
+            }
 
-        PERSON_LIST.forEach(p -> {
-            equalsList.add((equalsList.size() - 1) / 2, p);
-            listWrapper.add((listWrapper.size() - 1) / 2, p);
-        });
+            for (int j = 0; j < 5; j++) {
+                equalsList.add(1,PERSON_LIST.get(1));
+                listWrapper.add(1,PERSON_LIST.get(1));
+            }
 
-        PERSON_LIST.forEach(p -> {
-            equalsList.add(equalsList.size() - 1, p);
-            listWrapper.add(listWrapper.size() - 1, p);
-        });
+            PERSON_LIST.forEach(p -> {
+                equalsList.add(0, p);
+                listWrapper.add(0, p);
+            });
+
+            PERSON_LIST.forEach(p -> {
+                equalsList.add(equalsList.size() - 1, p);
+                listWrapper.add(listWrapper.size() - 1, p);
+            });
+        }
+
 
         assertEquals(equalsList.toString() , listWrapper.toString());
     }
@@ -65,7 +72,6 @@ public class ListWrapperTest {
 
     @Test
     public void addAllByIndex() {
-
         for (int i = 0; i < 20; i++) {
             equalsList.addAll(0, PERSON_LIST);
             listWrapper.addAll(0, PERSON_LIST);
@@ -151,6 +157,84 @@ public class ListWrapperTest {
     }
 
     @Test
+    public void testIterator() {
+        Iterator<Person> eqIter = equalsList.iterator();
+        Iterator<Person> wrapIter = listWrapper.iterator();
+
+        for (int i = 0; i < 11; i++) {
+            eqIter.next();
+            wrapIter.next();
+        }
+
+        while (wrapIter.hasNext()) {
+            eqIter.remove();
+            wrapIter.remove();
+
+            eqIter.next();
+            wrapIter.next();
+        }
+
+        assertEquals(equalsList.toString() , listWrapper.toString());
+    }
+
+    @Test
+    public void testListIterator() {
+        ListIterator<Person> eqIter = equalsList.listIterator(5);
+        ListIterator<Person> wrapIter = listWrapper.listIterator(5);
+
+        for (int i = 0; i < 11; i++) {
+            eqIter.next();
+            wrapIter.next();
+        }
+
+        for (int i = 0; i < 5; i++) {
+            eqIter.previous();
+            wrapIter.previous();
+        }
+
+        for (int i = 0; i < 5; i++) {
+            eqIter.add(new Person("asdasdasd123"));
+            wrapIter.add(new Person("asdasdasd123"));
+        }
+
+        while (wrapIter.hasNext()) {
+            eqIter.next();
+            wrapIter.next();
+
+            eqIter.set(new Person("x æ a-12"));
+            wrapIter.set(new Person("x æ a-12"));
+
+        }
+
+        assertEquals(equalsList.toString() , listWrapper.toString());
+
+    }
+
+    @Test
+    public void removeIf() {
+        equalsList.removeIf(p -> p.getName().equals("first") || p.getName().equals("second"));
+        listWrapper.removeIf(p -> p.getName().equals("first") || p.getName().equals("second"));
+
+        assertEquals(equalsList.toString() , listWrapper.toString());
+    }
+
+    @Test
+    public void replaceAll() {
+        equalsList.replaceAll(p -> new Person("AAAAAAA"));
+        listWrapper.replaceAll(p -> new Person("AAAAAAA"));
+
+        assertEquals(equalsList.toString() , listWrapper.toString());
+    }
+
+    @Test
+    public void sort() {
+        equalsList.sort(Comparator.comparingInt(Person::hashCode));
+        listWrapper.sort(Comparator.comparingInt(Person::hashCode));
+
+        assertEquals(equalsList.toString() , listWrapper.toString());
+    }
+
+    @Test
     public void combineTest() {
 
         for (int i = 0; i < 20; i++) {
@@ -162,6 +246,7 @@ public class ListWrapperTest {
             equalsList.retainAll(Arrays.asList(PERSON_LIST.get(3), PERSON_LIST.get(4)));
             equalsList.addAll(4, PERSON_LIST);
 
+
             listWrapper.add(PERSON_LIST.get(0));
             listWrapper.addAll(PERSON_LIST);
             listWrapper.remove(0);
@@ -169,9 +254,11 @@ public class ListWrapperTest {
             listWrapper.removeAll(FIRST_THREE_PEOPLE);
             listWrapper.retainAll(Arrays.asList(PERSON_LIST.get(3), PERSON_LIST.get(4)));
             listWrapper.addAll(4, PERSON_LIST);
+
         }
 
         assertEquals(equalsList.toString() , listWrapper.toString());
+
     }
 
     @After

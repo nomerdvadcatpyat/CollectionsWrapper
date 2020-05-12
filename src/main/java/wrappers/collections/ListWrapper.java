@@ -2,9 +2,10 @@ package wrappers.collections;
 
 import java.io.File;
 import java.io.Serializable;
-import java.nio.file.FileAlreadyExistsException;
 import java.util.*;
-import java.util.stream.Stream;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 
 public class ListWrapper<T extends Serializable> extends AbstractList<T> implements List<T> {
     private List<T> list; // внутренняя реализация листа
@@ -18,46 +19,42 @@ public class ListWrapper<T extends Serializable> extends AbstractList<T> impleme
     // Методы, работающие с файлами
     @Override
     public boolean add(T t) {
-        int lastSize = list.size();
         list.add(t); // добавить во внутр коллекцию
-        manager.addInEnd(list, lastSize);
+        manager.addInEnd(t);
         return true;
     }
 
     @Override
     public void add(int index, T element) {
         list.add(index, element);
-        ArrayList<T> newCollection = new ArrayList<>();
-        newCollection.add(element);
-        manager.add(index, list, newCollection);
+        manager.add(index, element);
     }
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        int lastSize = list.size();
         list.addAll(c);
-        manager.addInEnd(list, lastSize);
+        manager.addAllInEnd(c);
         return true;
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
         list.addAll(index, c);
-        manager.add(index, list, c);
+        manager.addAll(index, c);
         return true;
     }
 
     @Override
     public T remove(int index) {
         T value = list.remove(index);
-        manager.remove(index, list);
+        manager.remove(index);
         return value;
     }
 
     @Override
     public boolean remove(Object o) {
         int index = list.indexOf(o);
-        if(index == -1) return false;
+        if (index == -1) return false;
         remove(index);
         return true;
     }
@@ -65,28 +62,168 @@ public class ListWrapper<T extends Serializable> extends AbstractList<T> impleme
     @Override
     public void clear() {
         list.clear();
-        manager.checkDifference(list);
+        manager.removeDifference(list);
     }
 
     @Override
     public T set(int index, T element) {
         T value = list.set(index, element);
-        manager.set(index, list);
+        manager.set(index, element);
         return value;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
         list.removeAll(c);
-        manager.checkDifference(list);
+        manager.removeDifference(list);
         return true;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
         list.retainAll(c);
-        manager.checkDifference(list);
+        manager.removeDifference(list);
         return true;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new Itr();
+    }
+
+
+    private class Itr implements Iterator<T> {
+        Iterator<T> iterator = list.iterator();
+        int c = -1;
+
+        @Override
+        public boolean hasNext() {
+            return iterator.hasNext();
+        }
+
+        @Override
+        public T next() {
+            c++;
+            return iterator.next();
+        }
+
+        @Override
+        public void remove() {
+            iterator.remove();
+            manager.remove(c--);
+        }
+
+        @Override
+        public void forEachRemaining(Consumer<? super T> action) {
+            iterator.forEachRemaining(action);
+            //manager.checkDifference(list);
+        }
+    }
+
+    @Override
+    public ListIterator<T> listIterator() {
+        return new ListItr();
+    }
+
+    @Override
+    public ListIterator<T> listIterator(int index) {
+        return new ListItr(index);
+    }
+
+    private class ListItr implements ListIterator<T> {
+        ListIterator<T> listIterator;
+        int c;
+        int lastRet;
+
+        ListItr() {
+            listIterator = list.listIterator();
+            c = -1;
+        }
+
+        ListItr(int index) {
+            listIterator = list.listIterator(index);
+            c = index;
+        }
+
+        @Override
+        public void set(T t) {
+            listIterator.set(t);
+            manager.set(lastRet, t);
+        }
+
+        @Override
+        public void add(T t) {
+            listIterator.add(t);
+            lastRet = c;
+            manager.add(c++, t);
+        }
+
+        @Override
+        public void remove() {
+            listIterator.remove();
+            lastRet = c;
+            manager.remove(c--);
+        }
+
+        @Override
+        public boolean hasNext() {
+            return listIterator.hasNext();
+        }
+
+        @Override
+        public T next() {
+            lastRet = c;
+            c++;
+            return listIterator.next();
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            return listIterator.hasPrevious();
+        }
+
+        @Override
+        public T previous() {
+            lastRet = c;
+            c--;
+            return listIterator.previous();
+        }
+
+        @Override
+        public int nextIndex() {
+            return listIterator.nextIndex();
+        }
+
+        @Override
+        public int previousIndex() {
+            return listIterator.previousIndex();
+        }
+
+        @Override
+        public void forEachRemaining(Consumer<? super T> action) {
+            listIterator.forEachRemaining(action);
+            //manager.checkDifference(list);
+        }
+    }
+
+    @Override
+    public boolean removeIf(Predicate<? super T> filter) {
+        boolean b = list.removeIf(filter);
+        if (b) manager.removeDifference(list);
+        return b;
+    }
+
+    @Override
+    public void replaceAll(UnaryOperator<T> operator) {
+        list.replaceAll(operator);
+        manager.replaceAll(list);
+        //manager.checkDifference(list); // Не подходит, он только чекает диференсы, а не реплейсит, нужно либо писать новый метод либо сетами делать
+    }
+
+    @Override
+    public void sort(Comparator<? super T> c) {
+        list.sort(c);
+        manager.replaceAll(list);
     }
 
     // Методы, не работающие с файлами
@@ -103,11 +240,6 @@ public class ListWrapper<T extends Serializable> extends AbstractList<T> impleme
     @Override
     public boolean contains(Object o) {
         return list.contains(o);
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return list.iterator();
     }
 
     @Override
@@ -138,16 +270,6 @@ public class ListWrapper<T extends Serializable> extends AbstractList<T> impleme
     @Override
     public int lastIndexOf(Object o) {
         return list.lastIndexOf(o);
-    }
-
-    @Override
-    public ListIterator<T> listIterator() {
-        return list.listIterator();
-    }
-
-    @Override
-    public ListIterator<T> listIterator(int index) {
-        return list.listIterator(index);
     }
 
 }
