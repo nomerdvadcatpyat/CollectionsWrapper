@@ -11,15 +11,15 @@ public class ListWrapper<T extends Serializable> extends AbstractList<T> impleme
     private List<T> list; // внутренняя реализация листа
     private CollectionFilesManager<T> manager; // менеджер для обновления файлов коллекции
 
-    public ListWrapper(List<T> list, File directory, String prefix) {
+    public ListWrapper(List<T> list, File directory, String prefix, int fileObjectCapacity) {
         this.list = list;
-        manager = new CollectionFilesManager<>(list, directory, prefix, 5);
+        manager = new CollectionFilesManager<>(list, directory, prefix, fileObjectCapacity);
     }
 
     // Методы, работающие с файлами
     @Override
     public boolean add(T t) {
-        list.add(t); // добавить во внутр коллекцию
+        list.add(t);
         manager.addInEnd(t);
         return true;
     }
@@ -208,16 +208,17 @@ public class ListWrapper<T extends Serializable> extends AbstractList<T> impleme
 
     @Override
     public boolean removeIf(Predicate<? super T> filter) {
-        boolean b = list.removeIf(filter);
-        if (b) manager.removeDifference(list);
-        return b;
+        if (list.removeIf(filter)) {
+            manager.removeDifference(list);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public void replaceAll(UnaryOperator<T> operator) {
         list.replaceAll(operator);
         manager.replaceAll(list);
-        //manager.checkDifference(list); // Не подходит, он только чекает диференсы, а не реплейсит, нужно либо писать новый метод либо сетами делать
     }
 
     @Override

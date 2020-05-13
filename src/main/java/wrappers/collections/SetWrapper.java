@@ -7,14 +7,14 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class SetWrapper<T extends Serializable> implements Set<T> {
-    private Set<T> set; // внутренняя реализация set
+    private Set<T> set;
     private int lastSize;
 
-    private CollectionFilesManager<T> manager; // менеджер для обновления файлов коллекции
+    private CollectionFilesManager<T> manager;
 
-    public SetWrapper(Set<T> set, File directory, String prefix) {
+    public SetWrapper(Set<T> set, File directory, String prefix, int fileObjectCapacity) {
         this.set = set;
-        manager = new CollectionFilesManager<>(set, directory, prefix, 5);
+        manager = new CollectionFilesManager<>(set, directory, prefix, fileObjectCapacity);
     }
 
     @Override
@@ -52,9 +52,7 @@ public class SetWrapper<T extends Serializable> implements Set<T> {
         Collection<T> copyCol = new ArrayList<>(c);
         copyCol.removeAll(set);
 
-        for (T x : copyCol) {
-                add(x);
-        }
+        for (T x : copyCol) add(x);
 
         return set.addAll(c);
     }

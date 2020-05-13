@@ -3,7 +3,7 @@ package wrappers.collections;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import wrappers.Person;
+import wrappers.TestClass;
 
 import java.util.*;
 
@@ -12,20 +12,20 @@ import static wrappers.WrappersTestsConstants.*;
 
 public class SetWrapperTest {
 
-    private Set<Person> setWrapper;
-    private Set<Person> equalsSet = new HashSet<>();
+    private Set<TestClass> setWrapper;
+    private Set<TestClass> equalsSet = new HashSet<>();
 
     @Before
     public void prepare() {
-        setWrapper = new SetWrapper<>(new HashSet<>(), DIRECTORY, PREFIX);
+        setWrapper = new SetWrapper<>(new HashSet<>(), DIRECTORY, PREFIX, 50);
         simpleFillCollections(equalsSet, setWrapper);
     }
 
     @Test
     public void add() {
         for (int i = 0; i < 6; i++) {
-            equalsSet.add(PERSON_LIST.get(0));
-            setWrapper.add(PERSON_LIST.get(0));
+            equalsSet.add(TEST_CLASS_LIST.get(0));
+            setWrapper.add(TEST_CLASS_LIST.get(0));
         }
 
         assertEquals(equalsSet.toString(), setWrapper.toString());
@@ -34,8 +34,8 @@ public class SetWrapperTest {
     @Test
     public void remove() {
         for (int i = 0; i < 20; i++) {
-            equalsSet.remove(PERSON_LIST.get(0));
-            setWrapper.remove(PERSON_LIST.get(0));
+            equalsSet.remove(TEST_CLASS_LIST.get(0));
+            setWrapper.remove(TEST_CLASS_LIST.get(0));
         }
 
         assertEquals(equalsSet.toString(), setWrapper.toString());
@@ -44,8 +44,8 @@ public class SetWrapperTest {
     @Test
     public void addAll() {
         for (int i = 0; i < 20; i++) {
-            equalsSet.addAll(PERSON_LIST);
-            setWrapper.addAll(PERSON_LIST);
+            equalsSet.addAll(TEST_CLASS_LIST);
+            setWrapper.addAll(TEST_CLASS_LIST);
         }
 
         assertEquals(equalsSet.toString(), setWrapper.toString());
@@ -80,21 +80,23 @@ public class SetWrapperTest {
 
     @Test
     public void combineTest() {
-        List<Person> otherPersonList = Arrays.asList(new Person("asdas"), new Person("askdas"), new Person("sadads123"),
-                new Person("yhsaqiudyq"), new Person("18273sjaddas"), new Person("a123dasd"));
+        List<TestClass> otherTestClassList = Arrays.asList(new TestClass("asdas"), new TestClass("askdas"), new TestClass("sadads123"),
+                new TestClass("yhsaqiudyq"), new TestClass("18273sjaddas"), new TestClass("a123dasd"));
 
         for (int i = 0; i < 2; i++) {
-            equalsSet.add(otherPersonList.get(i));
-            equalsSet.addAll(PERSON_LIST);
-            equalsSet.remove(PERSON_LIST.get(i));
+            equalsSet.removeIf(p -> p.getTitle().equals("first") || p.getTitle().equals("second"));
+            equalsSet.add(otherTestClassList.get(i));
+            equalsSet.addAll(TEST_CLASS_LIST);
+            equalsSet.remove(TEST_CLASS_LIST.get(i));
             equalsSet.removeAll(FIRST_THREE_PEOPLE);
-            equalsSet.retainAll(Arrays.asList(otherPersonList.get(3), otherPersonList.get(4)));
+            equalsSet.retainAll(Arrays.asList(otherTestClassList.get(3), otherTestClassList.get(4)));
 
-            setWrapper.add(otherPersonList.get(i));
-            setWrapper.addAll(PERSON_LIST);
-            setWrapper.remove(PERSON_LIST.get(i));
+            setWrapper.removeIf(p -> p.getTitle().equals("first") || p.getTitle().equals("second"));
+            setWrapper.add(otherTestClassList.get(i));
+            setWrapper.addAll(TEST_CLASS_LIST);
+            setWrapper.remove(TEST_CLASS_LIST.get(i));
             setWrapper.removeAll(FIRST_THREE_PEOPLE);
-            setWrapper.retainAll(Arrays.asList(otherPersonList.get(3), otherPersonList.get(4)));
+            setWrapper.retainAll(Arrays.asList(otherTestClassList.get(3), otherTestClassList.get(4)));
         }
 
         assertEquals(equalsSet.toString() , setWrapper.toString());
@@ -102,8 +104,8 @@ public class SetWrapperTest {
 
     @Test
     public void testIterator() {
-        Iterator<Person> eqIter = equalsSet.iterator();
-        Iterator<Person> wrapIter = setWrapper.iterator();
+        Iterator<TestClass> eqIter = equalsSet.iterator();
+        Iterator<TestClass> wrapIter = setWrapper.iterator();
 
         for (int i = 0; i < 4; i++) {
             eqIter.next();
@@ -121,8 +123,8 @@ public class SetWrapperTest {
 
     @Test
     public void removeIf() {
-        equalsSet.removeIf(p -> p.getName().equals("first") || p.getName().equals("second"));
-        setWrapper.removeIf(p -> p.getName().equals("first") || p.getName().equals("second"));
+        equalsSet.removeIf(p -> p.getTitle().equals("first") || p.getTitle().equals("second"));
+        setWrapper.removeIf(p -> p.getTitle().equals("first") || p.getTitle().equals("second"));
 
         assertEquals(equalsSet.toString() , setWrapper.toString());
     }
@@ -130,7 +132,7 @@ public class SetWrapperTest {
     @After
     public void checkLoad() {
         try {
-            setWrapper = new SetWrapper<>(new HashSet<>(), DIRECTORY, PREFIX);
+            setWrapper = new SetWrapper<>(new HashSet<>(), DIRECTORY, PREFIX, 50);
             assertEquals(equalsSet.toString(), setWrapper.toString());
         } finally {
             equalsSet = new HashSet<>();

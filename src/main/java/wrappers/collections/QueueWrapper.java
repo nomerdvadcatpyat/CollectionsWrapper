@@ -7,12 +7,12 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class QueueWrapper<T extends Serializable> implements Queue<T> {
-    private Queue<T> queue; // внутренняя реализация очереди
-    private CollectionFilesManager<T> manager; // менеджер для обновления файлов коллекции
+    private Queue<T> queue;
+    private CollectionFilesManager<T> manager;
 
-    public QueueWrapper(Queue<T> queue, File directory, String prefix) {
+    public QueueWrapper(Queue<T> queue, File directory, String prefix, int fileObjectCapacity) {
         this.queue = queue;
-        manager = new CollectionFilesManager<>(queue, directory, prefix, 5);
+        manager = new CollectionFilesManager<>(queue, directory, prefix, fileObjectCapacity);
     }
 
     @Override

@@ -5,20 +5,22 @@ import wrappers.collections.CollectionFilesManager;
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class MapWrapper<K extends Serializable, V extends Serializable> implements Map<K, V> {
 
 
     private Map<K, V> map;
-    private List<SerializableEntry<K, V>> entries;
+    private List<SerializableEntry<K, V>> entries; // SerializableEntry сравниваются только по ключам
 
 
     private CollectionFilesManager<SerializableEntry<K, V>> mapManager;
 
-    public MapWrapper(Map<K, V> map, File directory, String prefix) {
+    public MapWrapper(Map<K, V> map, File directory, String prefix, int fileObjectCapacity) {
         entries = new ArrayList<>();
         this.map = map;
-        mapManager = new CollectionFilesManager<>(entries, directory, prefix, 5);
+        mapManager = new CollectionFilesManager<>(entries, directory, prefix, fileObjectCapacity);
 
         entries.forEach(e -> map.put(e.getKey(), e.getValue()));
     }
@@ -26,17 +28,13 @@ public class MapWrapper<K extends Serializable, V extends Serializable> implemen
 
     @Override
     public V put(K key, V value) {
-        SerializableEntry<K, V> newEntry = new SerializableEntry<>(key, value);
-
         if (map.put(key, value) == null) {
+            SerializableEntry<K, V> newEntry = new SerializableEntry<>(key, value);
             entries.add(newEntry);
             mapManager.addInEnd(newEntry);
         } else {
-            int index = entries.indexOf(newEntry);
-            entries.set(index, newEntry); // equals у SerializableEntry сравнивает только по ключам
-            mapManager.set(index, newEntry);
+            setInManager(key, value);
         }
-
 
         return map.get(key);
     }
@@ -55,17 +53,12 @@ public class MapWrapper<K extends Serializable, V extends Serializable> implemen
 
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
-        // изменить entries пробежавшись по m форичем и дальше отдельно добавить коллекцию новых и изменить коллекцию старых хз
         Collection<SerializableEntry<K, V>> newEntries = new ArrayList<>();
 
         m.forEach((k, v) -> {
-            SerializableEntry<K, V> newEntry = new SerializableEntry<>(k, v);
-
             if (map.containsKey(k)) {
-                int index = entries.indexOf(newEntry);
-                entries.set(index, newEntry);
-                mapManager.set(index, newEntry);
-            } else newEntries.add(newEntry);
+                setInManager(k,v);
+            } else newEntries.add(new SerializableEntry<>(k, v));
         });
 
         map.putAll(m);
@@ -82,6 +75,93 @@ public class MapWrapper<K extends Serializable, V extends Serializable> implemen
         mapManager.removeDifference(entries);
     }
 
+
+    @Override
+    public boolean replace(K key, V oldValue, V newValue) {
+        if (map.replace(key, oldValue, newValue)) {
+            setInManager(key, newValue);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public V replace(K key, V value) {
+        V v;
+        if ((v = map.replace(key, value)) != null) {
+            setInManager(key, value);
+        }
+        return v;
+    }
+
+    @Override
+    public void replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
+        map.replaceAll(function);
+
+        entries.clear();
+        map.forEach((k, v) -> entries.add(new SerializableEntry<>(k, v)));
+
+        mapManager.replaceAll(entries);
+    }
+
+    @Override
+    public V merge(K key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
+        if (!map.containsKey(key) || map.get(key) == null) {
+            return put(key, value);
+        } else {
+            if (map.merge(key, value, remappingFunction) != null) {
+                setInManager(key, map.get(key));
+                return map.get(key);
+            } else {
+                SerializableEntry<K, V> newEntry = new SerializableEntry<>(key, map.get(key));
+                int index = entries.indexOf(newEntry);
+
+                entries.remove(index);
+                mapManager.remove(index);
+
+                return null;
+            }
+        }
+    }
+
+    @Override
+    public V compute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+        if(map.compute(key, remappingFunction) != null) {
+            setInManager(key, map.get(key));
+            return map.get(key);
+        }
+        return null;
+    }
+
+    @Override
+    public V computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
+        if(map.get(key) == null)
+            put(key, mappingFunction.apply(key));
+        return map.get(key);
+    }
+
+    @Override
+    public V computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+        if(map.get(key) != null)
+            compute(key, remappingFunction);
+        return map.get(key);
+    }
+
+    @Override
+    public V putIfAbsent(K key, V value) {
+        if(map.get(key) == null)
+            put(key, value);
+        return map.get(key);
+    }
+
+    private void setInManager(K key, V value) {
+        SerializableEntry<K, V> newEntry = new SerializableEntry<>(key,value);
+        int index = entries.indexOf(newEntry);
+
+        entries.set(index, newEntry);
+        mapManager.set(index, newEntry);
+    }
 
     @Override
     public V get(Object key) {

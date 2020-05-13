@@ -1,22 +1,21 @@
 package wrappers;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class WrappersTestsConstants {
 
-    public static final List<Person> PERSON_LIST = Arrays.asList(new wrappers.Person("first"), new wrappers.Person("second"), new wrappers.Person("third"), new wrappers.Person("fourth"),
-            new wrappers.Person("fifth"), new wrappers.Person("sixth"));
+    public static final List<TestClass> TEST_CLASS_LIST = Arrays.asList(new TestClass("first"), new TestClass("second"), new TestClass("third"), new TestClass("fourth"),
+            new TestClass("fifth"), new TestClass("sixth"));
 
-    public static final List<Person> FIRST_THREE_PEOPLE = Arrays.asList(WrappersTestsConstants.PERSON_LIST.get(0), WrappersTestsConstants.PERSON_LIST.get(1), WrappersTestsConstants.PERSON_LIST.get(2));
+    public static final List<TestClass> FIRST_THREE_PEOPLE = Arrays.asList(WrappersTestsConstants.TEST_CLASS_LIST.get(0), WrappersTestsConstants.TEST_CLASS_LIST.get(1), WrappersTestsConstants.TEST_CLASS_LIST.get(2));
 
-    public static final Map<Person, String> PERSON_MAP = new HashMap<>() {
+    public static final Map<TestClass, String> PERSON_MAP = new HashMap<>() {
         {
-            put(new Person("Person1"), "Person1");
-            put(new Person("Person2"), "Person2");
-            put(new Person("Person3"), "Person3");
-            put(new Person("Person4"), "Person4");
+            put(new TestClass("Person1"), "Person1");
+            put(new TestClass("Person2"), "Person2");
+            put(new TestClass("Person3"), "Person3");
+            put(new TestClass("Person4"), "Person4");
         }
     };
 
@@ -24,9 +23,9 @@ public class WrappersTestsConstants {
 
     public static final String PREFIX = "test";
 
-    public static void simpleFillCollections(Collection<Person> equalsCollection, Collection<Person> wrapperCollection) {
+    public static void simpleFillCollections(Collection<TestClass> equalsCollection, Collection<TestClass> wrapperCollection) {
         for (int i = 0; i < 5; i++) {
-            PERSON_LIST.forEach(p -> {
+            TEST_CLASS_LIST.forEach(p -> {
                 equalsCollection.add(p);
                 wrapperCollection.add(p);
             });
