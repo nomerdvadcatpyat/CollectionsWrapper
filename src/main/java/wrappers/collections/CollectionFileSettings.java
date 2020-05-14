@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 public class CollectionFileSettings implements Serializable {
     private File file;
-    private int size = 0;
+    private int size;
     private int collectionHash = 0;
 
     public int getCollectionHash() {
