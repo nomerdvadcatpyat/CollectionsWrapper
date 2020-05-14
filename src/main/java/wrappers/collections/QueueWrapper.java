@@ -10,9 +10,14 @@ public class QueueWrapper<T extends Serializable> implements Queue<T> {
     private Queue<T> queue;
     private CollectionFilesManager<T> manager;
 
-    public QueueWrapper(Queue<T> queue, File directory, String prefix, int fileObjectCapacity) {
+    public QueueWrapper(Queue<T> queue, File directory, String prefix) {
         this.queue = queue;
-        manager = new CollectionFilesManager<>(queue, directory, prefix, fileObjectCapacity);
+        manager = new CollectionFilesManager<>(queue, directory, prefix, 50, 20);
+    }
+
+    public QueueWrapper(Queue<T> queue, File directory, String prefix, int fileObjectCapacity, int changesCounter) {
+        this.queue = queue;
+        manager = new CollectionFilesManager<>(queue, directory, prefix, fileObjectCapacity, changesCounter);
     }
 
     @Override

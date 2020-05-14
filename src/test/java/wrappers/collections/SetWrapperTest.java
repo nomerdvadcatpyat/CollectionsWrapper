@@ -17,7 +17,7 @@ public class SetWrapperTest {
 
     @Before
     public void prepare() {
-        setWrapper = new SetWrapper<>(new HashSet<>(), DIRECTORY, PREFIX, 50);
+        setWrapper = new SetWrapper<>(new HashSet<>(), DIRECTORY, PREFIX, 50, 20);
         simpleFillCollections(equalsSet, setWrapper);
     }
 
@@ -132,7 +132,7 @@ public class SetWrapperTest {
     @After
     public void checkLoad() {
         try {
-            setWrapper = new SetWrapper<>(new HashSet<>(), DIRECTORY, PREFIX, 50);
+            setWrapper = new SetWrapper<>(new HashSet<>(), DIRECTORY, PREFIX, 50, 20);
             assertEquals(equalsSet.toString(), setWrapper.toString());
         } finally {
             equalsSet = new HashSet<>();

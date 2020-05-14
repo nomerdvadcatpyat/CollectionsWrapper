@@ -18,7 +18,7 @@ public class QueueWrapperTest {
 
     @Before
     public void prepare() {
-        queueWrapper = new QueueWrapper<>(new LinkedList<>(), DIRECTORY, PREFIX, 50);
+        queueWrapper = new QueueWrapper<>(new LinkedList<>(), DIRECTORY, PREFIX, 50, 20);
         simpleFillCollections(equalsQueue, queueWrapper);
     }
 
@@ -168,7 +168,7 @@ public class QueueWrapperTest {
     @After
     public void checkLoad() {
         try {
-            queueWrapper = new QueueWrapper<>(new LinkedList<>(), DIRECTORY, PREFIX, 50);
+            queueWrapper = new QueueWrapper<>(new LinkedList<>(), DIRECTORY, PREFIX, 50, 20);
             assertEquals(equalsQueue.toString(), queueWrapper.toString());
         } finally {
             equalsQueue = new LinkedList<>();

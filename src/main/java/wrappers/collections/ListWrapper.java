@@ -11,9 +11,14 @@ public class ListWrapper<T extends Serializable> extends AbstractList<T> impleme
     private List<T> list; // внутренняя реализация листа
     private CollectionFilesManager<T> manager; // менеджер для обновления файлов коллекции
 
-    public ListWrapper(List<T> list, File directory, String prefix, int fileObjectCapacity) {
+    public ListWrapper(List<T> list, File directory, String prefix) {
         this.list = list;
-        manager = new CollectionFilesManager<>(list, directory, prefix, fileObjectCapacity);
+        manager = new CollectionFilesManager<>(list, directory, prefix, 50, 20);
+    }
+
+    public ListWrapper(List<T> list, File directory, String prefix, int fileObjectCapacity, int changesCounter) {
+        this.list = list;
+        manager = new CollectionFilesManager<>(list, directory, prefix, fileObjectCapacity, changesCounter);
     }
 
     // Методы, работающие с файлами

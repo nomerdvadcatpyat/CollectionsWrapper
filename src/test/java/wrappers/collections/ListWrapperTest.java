@@ -17,7 +17,7 @@ public class ListWrapperTest {
 
     @Before
     public void prepare() {
-        listWrapper = new ListWrapper<>(new ArrayList<>(), DIRECTORY, PREFIX, 50);
+        listWrapper = new ListWrapper<>(new ArrayList<>(), DIRECTORY, PREFIX, 50, 20);
         simpleFillCollections(equalsList, listWrapper);
     }
 
@@ -269,7 +269,7 @@ public class ListWrapperTest {
     @After
     public void checkLoad() {
         try {
-            listWrapper = new ListWrapper<>(new ArrayList<>(), DIRECTORY, PREFIX, 50);
+            listWrapper = new ListWrapper<>(new ArrayList<>(), DIRECTORY, PREFIX, 50, 20);
             assertEquals(equalsList.toString() , listWrapper.toString());
         } finally {
             equalsList = new ArrayList<>();

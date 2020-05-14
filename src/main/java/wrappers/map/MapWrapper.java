@@ -17,10 +17,18 @@ public class MapWrapper<K extends Serializable, V extends Serializable> implemen
 
     private CollectionFilesManager<SerializableEntry<K, V>> mapManager;
 
-    public MapWrapper(Map<K, V> map, File directory, String prefix, int fileObjectCapacity) {
+    public MapWrapper(Map<K, V> map, File directory, String prefix) {
         entries = new ArrayList<>();
         this.map = map;
-        mapManager = new CollectionFilesManager<>(entries, directory, prefix, fileObjectCapacity);
+        mapManager = new CollectionFilesManager<>(entries, directory, prefix, 50, 20);
+
+        entries.forEach(e -> map.put(e.getKey(), e.getValue()));
+    }
+
+    public MapWrapper(Map<K, V> map, File directory, String prefix, int fileObjectCapacity, int changesCounter) {
+        entries = new ArrayList<>();
+        this.map = map;
+        mapManager = new CollectionFilesManager<>(entries, directory, prefix, fileObjectCapacity, changesCounter);
 
         entries.forEach(e -> map.put(e.getKey(), e.getValue()));
     }

@@ -12,9 +12,14 @@ public class SetWrapper<T extends Serializable> implements Set<T> {
 
     private CollectionFilesManager<T> manager;
 
-    public SetWrapper(Set<T> set, File directory, String prefix, int fileObjectCapacity) {
+    public SetWrapper(Set<T> set, File directory, String prefix) {
         this.set = set;
-        manager = new CollectionFilesManager<>(set, directory, prefix, fileObjectCapacity);
+        manager = new CollectionFilesManager<>(set, directory, prefix, 50, 20);
+    }
+
+    public SetWrapper(Set<T> set, File directory, String prefix, int fileObjectCapacity, int changesCounter) {
+        this.set = set;
+        manager = new CollectionFilesManager<>(set, directory, prefix, fileObjectCapacity, changesCounter);
     }
 
     @Override

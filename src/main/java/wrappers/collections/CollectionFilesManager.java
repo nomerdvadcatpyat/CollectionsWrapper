@@ -4,20 +4,22 @@ import java.io.*;
 import java.util.*;
 
 public class CollectionFilesManager<T extends Serializable> {
-
-    private List<CollectionFileSettings> filesSettingsCollection = new ArrayList<>();
+    private List<CollectionFileSettings> CFSCollection = new ArrayList<>();
     private String prefix;
     private File directory;
     private File fileWithCollectionFiles;
     private int fileObjectCapacity;
+    private int changesCounter;
 
-    public CollectionFilesManager(Collection<T> collection, File directory, String prefix, int fileObjectCapacity) {
+    public CollectionFilesManager(Collection<T> collection, File directory, String prefix, int fileObjectCapacity, int changesCounter) {
         this.fileObjectCapacity = fileObjectCapacity;
+        this.changesCounter = changesCounter;
         this.prefix = prefix;
         this.directory = directory;
         fileWithCollectionFiles = new File(directory + File.separator + prefix + "-files_storage");
         if (fileWithCollectionFiles.length() != 0) {
             readFilesSettingsCollection();
+            compressFiles();
             loadFullCollection(collection);
         }
     }
@@ -41,8 +43,8 @@ public class CollectionFilesManager<T extends Serializable> {
 
         fillFile(lastCFS, fileCollection.iterator(), fileObjectCapacity);
 
-        optimizeFilesSettingsCollection();
-        writeFilesSettingsCollection();
+        changesCounter++;
+        optimizeAndWriteInFileCFSCollection();
     }
 
     /* Добавление коллекции в конец коллекции в файлах.
@@ -71,8 +73,8 @@ public class CollectionFilesManager<T extends Serializable> {
             fillFile(lastCFS, iterator, fileObjectCapacity);
         }
 
-        optimizeFilesSettingsCollection();
-        writeFilesSettingsCollection();
+        changesCounter++;
+        optimizeAndWriteInFileCFSCollection();
     }
 
 
@@ -95,8 +97,8 @@ public class CollectionFilesManager<T extends Serializable> {
         iterator = fileCollection.iterator();
         fillFile(cfs, iterator, cfs.getSize() - 1);
 
-        optimizeFilesSettingsCollection();
-        writeFilesSettingsCollection();
+        changesCounter++;
+        optimizeAndWriteInFileCFSCollection();
     }
 
     /* Вставить коллекцию по индексу.
@@ -130,7 +132,7 @@ public class CollectionFilesManager<T extends Serializable> {
             while (remains > 0 && iterator.hasNext()) {
                 CollectionFileSettings nextCfs = null;
                 if (!cfs.equals(getLastCFS()))
-                    nextCfs = filesSettingsCollection.get(filesSettingsCollection.indexOf(cfs) + 1);
+                    nextCfs = CFSCollection.get(CFSCollection.indexOf(cfs) + 1);
 
                 if (nextCfs != null && fileObjectCapacity - nextCfs.getSize() >= remains) {
                     Collection<T> resFileCollection = new ArrayList<>();
@@ -140,8 +142,8 @@ public class CollectionFilesManager<T extends Serializable> {
 
                     fillFile(nextCfs, resFileCollection.iterator(), fileObjectCapacity);
                 } else {
-                    addCFS(filesSettingsCollection.indexOf(cfs) + 1);
-                    nextCfs = filesSettingsCollection.get(filesSettingsCollection.indexOf(cfs) + 1);
+                    addCFS(CFSCollection.indexOf(cfs) + 1);
+                    nextCfs = CFSCollection.get(CFSCollection.indexOf(cfs) + 1);
 
                     fillFile(nextCfs, iterator, Math.min(fileObjectCapacity, remains));
                 }
@@ -149,8 +151,9 @@ public class CollectionFilesManager<T extends Serializable> {
                 cfs = nextCfs;
             }
         }
-        optimizeFilesSettingsCollection();
-        writeFilesSettingsCollection();
+
+        changesCounter++;
+        optimizeAndWriteInFileCFSCollection();
     }
 
     /*Вставка 1 элемента по индексу.
@@ -163,10 +166,10 @@ public class CollectionFilesManager<T extends Serializable> {
     /* Очистить все.
      * Выставляем объектам файлов размер 0 и в optimizeFilesSettingsCollection они вычищаются. */
     private void clearAll() {
-        for (CollectionFileSettings cfs : filesSettingsCollection) cfs.setSize(0);
+        for (CollectionFileSettings cfs : CFSCollection) cfs.setSize(0);
 
-        optimizeFilesSettingsCollection();
-        writeFilesSettingsCollection();
+        changesCounter = 0;
+        optimizeAndWriteInFileCFSCollection();
     }
 
 
@@ -185,8 +188,8 @@ public class CollectionFilesManager<T extends Serializable> {
     }
 
     /* Заменить все вхождения.
-    * Очищаем коллекцию в файлах и засовываем новую.
-    * */
+     * Очищаем коллекцию в файлах и засовываем новую.
+     * */
     public void replaceAll(Collection<T> newCollection) {
         clearAll();
         addAllInEnd(newCollection);
@@ -203,21 +206,21 @@ public class CollectionFilesManager<T extends Serializable> {
         }
 
         // Здесь мы не перезаписываем все файлы коллекции. Только те, элементы в которых были изменены.
-        for (CollectionFileSettings cfs : filesSettingsCollection) {
+        for (CollectionFileSettings cfs : CFSCollection) {
             removeDifference(copyCollection, cfs);
         }
 
-        optimizeFilesSettingsCollection();
-        writeFilesSettingsCollection();
+        changesCounter++;
+        optimizeAndWriteInFileCFSCollection();
     }
 
 
     // ВНУТРЕННИЕ МЕТОДЫ ДЛЯ РАБОТЫ С ФАЙЛАМИ КОЛЛЕКЦИИ
 
     /* Удаление различий у коллекции из файла и измененной коллекции.
-    * subCollection - подколлекция измененной коллекции
-    * если хэши у старой коллекции из файла и подколлекции измененной коллекции не совпали, то записываем в файл измененную подколлекцию
-    * */
+     * subCollection - подколлекция измененной коллекции
+     * если хэши у старой коллекции из файла и подколлекции измененной коллекции не совпали, то записываем в файл измененную подколлекцию
+     * */
     private void removeDifference(List<T> copyCollection, CollectionFileSettings cfs) {
         List<T> subCollection = new ArrayList<>();
         for (int i = 0; i < Math.min(cfs.getSize(), copyCollection.size()); i++) //subcol = copyCol(0..min(copyCol.size, cfs.getSize)
@@ -249,12 +252,12 @@ public class CollectionFilesManager<T extends Serializable> {
     }
 
     private CollectionFileSettings getLastCFS() {
-        if (filesSettingsCollection.isEmpty()) addCFS();
-        return filesSettingsCollection.get(filesSettingsCollection.size() - 1);
+        if (CFSCollection.isEmpty()) addCFS();
+        return CFSCollection.get(CFSCollection.size() - 1);
     }
 
     private void loadFullCollection(Collection<T> collection) {
-        for (CollectionFileSettings cfs : filesSettingsCollection) {
+        for (CollectionFileSettings cfs : CFSCollection) {
             collection.addAll(loadSubCollection(cfs));
         }
     }
@@ -271,9 +274,9 @@ public class CollectionFilesManager<T extends Serializable> {
     }
 
     private int getSumOfPreviousFilesSizes(CollectionFileSettings cfs) {
-        if (filesSettingsCollection.size() == 1) return 0;
+        if (CFSCollection.size() == 1) return 0;
         int sum = 0;
-        for (CollectionFileSettings c : filesSettingsCollection) {
+        for (CollectionFileSettings c : CFSCollection) {
             if (c.getFile().getAbsolutePath().equals(cfs.getFile().getAbsolutePath())) break;
             sum += c.getSize();
         }
@@ -282,7 +285,7 @@ public class CollectionFilesManager<T extends Serializable> {
 
     private int getSumOfAllFilesSizes() {
         int sum = 0;
-        for (CollectionFileSettings c : filesSettingsCollection)
+        for (CollectionFileSettings c : CFSCollection)
             sum += c.getSize();
         return sum;
     }
@@ -290,12 +293,12 @@ public class CollectionFilesManager<T extends Serializable> {
     private CollectionFileSettings getCFSWithElement(int index) {
         int sumOfCfsSizes = 0;
         if (index == 0) {
-            if (filesSettingsCollection.isEmpty()) addCFS();
-            return filesSettingsCollection.get(0);
+            if (CFSCollection.isEmpty()) addCFS();
+            return CFSCollection.get(0);
         }
 
         CollectionFileSettings res = null;
-        for (CollectionFileSettings cfs : filesSettingsCollection) {
+        for (CollectionFileSettings cfs : CFSCollection) {
             sumOfCfsSizes += cfs.getSize();
             if (sumOfCfsSizes > index) {
                 res = cfs;
@@ -306,7 +309,7 @@ public class CollectionFilesManager<T extends Serializable> {
     }
 
     private void writeFilesSettingsCollection() {
-        if (filesSettingsCollection.isEmpty()) {
+        if (CFSCollection.isEmpty()) {
             try (PrintWriter writer = new PrintWriter(fileWithCollectionFiles)) {
                 writer.print("");
             } catch (Exception e) {
@@ -314,27 +317,52 @@ public class CollectionFilesManager<T extends Serializable> {
             }
         } else {
             try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileWithCollectionFiles))) {
-                oos.writeObject(filesSettingsCollection);
+                oos.writeObject(CFSCollection);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void optimizeFilesSettingsCollection() {
+    private void optimizeAndWriteInFileCFSCollection() {
+        removeEmptyFiles();
+        if (changesCounter == 20)
+            compressFiles();
+    }
+
+    private void compressFiles() {
+        for (int i = 0; i < CFSCollection.size() - 1; i++) {
+            // бежать по цфсам и смотреть: если текущий файл может засунуть в себя следующий, то делать это
+            CollectionFileSettings cfs = CFSCollection.get(i);
+            CollectionFileSettings nextCfs = CFSCollection.get(i + 1);
+
+            if (cfs.getSize() + nextCfs.getSize() <= fileObjectCapacity) {
+                Collection<T> fileCollection = loadSubCollection(cfs);
+                fileCollection.addAll(loadSubCollection(nextCfs));
+                fillFile(cfs, fileCollection.iterator(), fileObjectCapacity);
+
+                CFSCollection.remove(nextCfs);
+                new File(nextCfs.getFile().getAbsolutePath()).delete();
+            }
+        }
+        writeFilesSettingsCollection();
+    }
+
+    private void removeEmptyFiles() {
         Collection<CollectionFileSettings> removeCollection = new ArrayList<>();
-        for (CollectionFileSettings cfs : filesSettingsCollection) {
+        for (CollectionFileSettings cfs : CFSCollection) {
             if (cfs.getSize() == 0) {
                 removeCollection.add(cfs);
                 new File(cfs.getFile().getAbsolutePath()).delete();
             }
         }
-        filesSettingsCollection.removeAll(removeCollection);
+        CFSCollection.removeAll(removeCollection);
+        writeFilesSettingsCollection();
     }
 
     private void readFilesSettingsCollection() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileWithCollectionFiles))) {
-            filesSettingsCollection = (List<CollectionFileSettings>) ois.readObject();
+            CFSCollection = (List<CollectionFileSettings>) ois.readObject();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -342,7 +370,7 @@ public class CollectionFilesManager<T extends Serializable> {
 
     private void addCFS() {
         try {
-            filesSettingsCollection.add(new CollectionFileSettings(File.createTempFile(prefix, "", directory), 0));
+            CFSCollection.add(new CollectionFileSettings(File.createTempFile(prefix, "", directory), 0));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -351,7 +379,7 @@ public class CollectionFilesManager<T extends Serializable> {
 
     private void addCFS(int index) {
         try {
-            filesSettingsCollection.add(index, new CollectionFileSettings(File.createTempFile(prefix, "", directory), 0));
+            CFSCollection.add(index, new CollectionFileSettings(File.createTempFile(prefix, "", directory), 0));
         } catch (IOException e) {
             e.printStackTrace();
         }

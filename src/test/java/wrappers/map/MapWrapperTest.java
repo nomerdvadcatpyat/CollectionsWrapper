@@ -17,7 +17,7 @@ public class MapWrapperTest {
 
     @Before
     public void prepare() {
-        mapWrapper = new MapWrapper<>(new HashMap<>(), DIRECTORY, PREFIX, 50);
+        mapWrapper = new MapWrapper<>(new HashMap<>(), DIRECTORY, PREFIX, 50, 20);
         simpleFillMaps(equalsMap, mapWrapper);
     }
 
@@ -145,7 +145,7 @@ public class MapWrapperTest {
     @After
     public void checkLoad() {
         try {
-            mapWrapper = new MapWrapper<>(new HashMap<>(), DIRECTORY, PREFIX, 50);
+            mapWrapper = new MapWrapper<>(new HashMap<>(), DIRECTORY, PREFIX, 50, 20);
             assertEquals(equalsMap.toString(), mapWrapper.toString());
         } finally {
             equalsMap = new HashMap<>();
