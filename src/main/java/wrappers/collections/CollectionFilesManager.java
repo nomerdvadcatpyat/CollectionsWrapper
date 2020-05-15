@@ -326,7 +326,7 @@ public class CollectionFilesManager<T extends Serializable> {
 
     private void optimizeAndWriteInFileCFSCollection() {
         removeEmptyFiles();
-        if (changesCounter == 20)
+        if (changesCounter >= 20)
             compressFiles();
     }
 

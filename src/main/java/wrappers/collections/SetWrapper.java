@@ -8,45 +8,48 @@ import java.util.function.Predicate;
 
 public class SetWrapper<T extends Serializable> implements Set<T> {
     private Set<T> set;
-    private int lastSize;
 
+    private List<T> collectionInFiles = new ArrayList<>();
     private CollectionFilesManager<T> manager;
 
     public SetWrapper(Set<T> set, File directory, String prefix) {
         this.set = set;
-        manager = new CollectionFilesManager<>(set, directory, prefix, 50, 20);
+        manager = new CollectionFilesManager<>(collectionInFiles, directory, prefix, 50, 20);
+
+        set.addAll(collectionInFiles);
     }
 
     public SetWrapper(Set<T> set, File directory, String prefix, int fileObjectCapacity, int changesCounter) {
         this.set = set;
-        manager = new CollectionFilesManager<>(set, directory, prefix, fileObjectCapacity, changesCounter);
+        manager = new CollectionFilesManager<>(collectionInFiles, directory, prefix, fileObjectCapacity, changesCounter);
+
+        set.addAll(collectionInFiles);
     }
 
     @Override
     public boolean add(T t) {
         if (set.add(t)) {
-            int index = getSetPos(t);
-            if(index == set.size() - 1) manager.addInEnd(t);
-            else manager.add(index, t);
+            collectionInFiles.add(t);
+            manager.addInEnd(t);
         }
         return true;
     }
 
-    private int getSetPos(T t) {
-        int c = 0;
-        Iterator<T> iterator = set.iterator();
-        while (!iterator.next().equals(t)) {
-            if (!iterator.hasNext()) return -1;
-            c++;
-        }
-        return c;
-    }
+//    private int getSetPos(T t) {
+//        int c = 0;
+//        Iterator<T> iterator = set.iterator();
+//        while (!iterator.next().equals(t)) {
+//            if (!iterator.hasNext()) return -1;
+//            c++;
+//        }
+//        return c;
+//    }
 
     @Override
     public boolean remove(Object o) {
-        int index = getSetPos((T) o);
-
         if (set.remove(o)) {
+            int index = collectionInFiles.indexOf(o);
+            collectionInFiles.remove(o);
             manager.remove(index);
         }
         return true;
@@ -54,36 +57,44 @@ public class SetWrapper<T extends Serializable> implements Set<T> {
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        Collection<T> copyCol = new ArrayList<>(c);
-        copyCol.removeAll(set);
+        Collection<T> newElements = new ArrayList<>(c);
+        newElements.removeAll(set);
 
-        for (T x : copyCol) add(x);
+        if(!newElements.isEmpty()) {
+            set.addAll(c);
+            collectionInFiles.addAll(newElements);
+            manager.addAllInEnd(newElements);
+            return true;
+        }
 
-        return set.addAll(c);
+        return false;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
         if (set.retainAll(c)) {
-            manager.removeDifference(set);
+            collectionInFiles.retainAll(c);
+            manager.removeDifference(collectionInFiles);
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        lastSize = set.size();
-        set.removeAll(c);
-        if (set.size() != lastSize) {
-            manager.removeDifference(set);
+        if (set.removeAll(c)) {
+            collectionInFiles.removeAll(c);
+            manager.removeDifference(collectionInFiles);
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override
     public void clear() {
         set.clear();
-        manager.removeDifference(set);
+        collectionInFiles.clear();
+        manager.removeDifference(collectionInFiles);
     }
 
     @Override
@@ -93,8 +104,8 @@ public class SetWrapper<T extends Serializable> implements Set<T> {
 
 
     private class Itr implements Iterator<T> {
-        Iterator<T> iterator = set.iterator();
-        int c = -1;
+        private Iterator<T> iterator = set.iterator();
+        private T current;
 
         @Override
         public boolean hasNext() {
@@ -103,14 +114,17 @@ public class SetWrapper<T extends Serializable> implements Set<T> {
 
         @Override
         public T next() {
-            c++;
-            return iterator.next();
+            current = iterator.next();
+            return current;
         }
 
         @Override
         public void remove() {
             iterator.remove();
-            manager.remove(c--);
+
+            int index = collectionInFiles.indexOf(current);
+            collectionInFiles.remove(index);
+            manager.remove(index);
         }
 
         @Override
@@ -122,15 +136,19 @@ public class SetWrapper<T extends Serializable> implements Set<T> {
 
     @Override
     public boolean removeIf(Predicate<? super T> filter) {
-        boolean b = set.removeIf(filter);
-        if (b) manager.removeDifference(set);
-        return b;
+        if (set.removeIf(filter)) {
+
+            collectionInFiles.removeIf(filter);
+            manager.removeDifference(collectionInFiles);
+
+            return true;
+        }
+        return false;
     }
 
 
     @Override
     public int size() {
-        lastSize = set.size();
         return set.size();
     }
 

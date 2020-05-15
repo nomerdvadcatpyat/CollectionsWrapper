@@ -28,7 +28,7 @@ public class ListWrapperTest {
         equalsList.add(TEST_CLASS_LIST.get(0));
         listWrapper.add(TEST_CLASS_LIST.get(0));
 
-        assertEquals(equalsList.toString() , listWrapper.toString());
+        assertEquals(equalsList.toString(), listWrapper.toString());
     }
 
     @Test
@@ -39,9 +39,9 @@ public class ListWrapperTest {
                 listWrapper.add(0, TEST_CLASS_LIST.get(0));
             }
 
-            for (int j = 0; j < 5; j++) {
-                equalsList.add(1, TEST_CLASS_LIST.get(1));
-                listWrapper.add(1, TEST_CLASS_LIST.get(1));
+            for (int j = 0; j < 10; j++) {
+                equalsList.add(i, new TestClass(i + ""));
+                listWrapper.add(i, new TestClass(i + ""));
             }
 
         }
@@ -57,7 +57,7 @@ public class ListWrapperTest {
         });
 
 
-        assertEquals(equalsList.toString() , listWrapper.toString());
+        assertEquals(equalsList.toString(), listWrapper.toString());
     }
 
     @Test
@@ -67,23 +67,23 @@ public class ListWrapperTest {
             listWrapper.addAll(TEST_CLASS_LIST);
         }
 
-        assertEquals(equalsList.toString() , listWrapper.toString());
+        assertEquals(equalsList.toString(), listWrapper.toString());
     }
 
     @Test
     public void addAllByIndex() {
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 25; i++) {
             equalsList.addAll(0, TEST_CLASS_LIST);
             listWrapper.addAll(0, TEST_CLASS_LIST);
 
-            equalsList.addAll((equalsList.size() - 1) / 2, TEST_CLASS_LIST);
-            listWrapper.addAll((listWrapper.size() - 1) / 2, TEST_CLASS_LIST);
+            equalsList.addAll((equalsList.size() - 1) / 2, Arrays.asList(new TestClass(i + ""), new TestClass(i + "1"), new TestClass(i + "2")));
+            listWrapper.addAll((listWrapper.size() - 1) / 2, Arrays.asList(new TestClass(i + ""), new TestClass(i + "1"), new TestClass(i + "2")));
 
             equalsList.addAll(equalsList.size() - 1, TEST_CLASS_LIST);
             listWrapper.addAll(listWrapper.size() - 1, TEST_CLASS_LIST);
         }
 
-        assertEquals(equalsList.toString() , listWrapper.toString());
+        assertEquals(equalsList.toString(), listWrapper.toString());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class ListWrapperTest {
             listWrapper.remove(0);
         }
 
-        assertEquals(equalsList.toString() , listWrapper.toString());
+        assertEquals(equalsList.toString(), listWrapper.toString());
     }
 
     @Test
@@ -110,7 +110,7 @@ public class ListWrapperTest {
             listWrapper.remove(p);
         }
 
-        assertEquals(equalsList.toString() , listWrapper.toString());
+        assertEquals(equalsList.toString(), listWrapper.toString());
     }
 
 
@@ -120,7 +120,7 @@ public class ListWrapperTest {
         equalsList.clear();
         listWrapper.clear();
 
-        assertEquals(equalsList.toString() , listWrapper.toString());
+        assertEquals(equalsList.toString(), listWrapper.toString());
     }
 
     @Test
@@ -130,7 +130,7 @@ public class ListWrapperTest {
             listWrapper.set(5 - i, TEST_CLASS_LIST.get(i));
         }
 
-        assertEquals(equalsList.toString() , listWrapper.toString());
+        assertEquals(equalsList.toString(), listWrapper.toString());
     }
 
     @Test
@@ -141,7 +141,7 @@ public class ListWrapperTest {
             listWrapper.removeAll(FIRST_THREE_PEOPLE);
         }
 
-        assertEquals(equalsList.toString() , listWrapper.toString());
+        assertEquals(equalsList.toString(), listWrapper.toString());
     }
 
     @Test
@@ -152,7 +152,7 @@ public class ListWrapperTest {
             listWrapper.retainAll(FIRST_THREE_PEOPLE);
         }
 
-        assertEquals(equalsList.toString() , listWrapper.toString());
+        assertEquals(equalsList.toString(), listWrapper.toString());
 
     }
 
@@ -174,7 +174,7 @@ public class ListWrapperTest {
             wrapIter.next();
         }
 
-        assertEquals(equalsList.toString() , listWrapper.toString());
+        assertEquals(equalsList.toString(), listWrapper.toString());
     }
 
     @Test
@@ -206,7 +206,7 @@ public class ListWrapperTest {
 
         }
 
-        assertEquals(equalsList.toString() , listWrapper.toString());
+        assertEquals(equalsList.toString(), listWrapper.toString());
 
     }
 
@@ -215,7 +215,7 @@ public class ListWrapperTest {
         equalsList.removeIf(p -> p.getTitle().equals("first") || p.getTitle().equals("second"));
         listWrapper.removeIf(p -> p.getTitle().equals("first") || p.getTitle().equals("second"));
 
-        assertEquals(equalsList.toString() , listWrapper.toString());
+        assertEquals(equalsList.toString(), listWrapper.toString());
     }
 
     @Test
@@ -223,7 +223,7 @@ public class ListWrapperTest {
         equalsList.replaceAll(p -> new TestClass("AAAAAAA"));
         listWrapper.replaceAll(p -> new TestClass("AAAAAAA"));
 
-        assertEquals(equalsList.toString() , listWrapper.toString());
+        assertEquals(equalsList.toString(), listWrapper.toString());
     }
 
     @Test
@@ -231,7 +231,7 @@ public class ListWrapperTest {
         equalsList.sort(Comparator.comparingInt(TestClass::hashCode));
         listWrapper.sort(Comparator.comparingInt(TestClass::hashCode));
 
-        assertEquals(equalsList.toString() , listWrapper.toString());
+        assertEquals(equalsList.toString(), listWrapper.toString());
     }
 
     @Test
@@ -262,7 +262,7 @@ public class ListWrapperTest {
 
         }
 
-        assertEquals(equalsList.toString() , listWrapper.toString());
+        assertEquals(equalsList.toString(), listWrapper.toString());
 
     }
 
@@ -270,7 +270,7 @@ public class ListWrapperTest {
     public void checkLoad() {
         try {
             listWrapper = new ListWrapper<>(new ArrayList<>(), DIRECTORY, PREFIX, 50, 20);
-            assertEquals(equalsList.toString() , listWrapper.toString());
+            assertEquals(equalsList.toString(), listWrapper.toString());
         } finally {
             equalsList = new ArrayList<>();
             deleteFiles();

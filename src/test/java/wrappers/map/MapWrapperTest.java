@@ -32,6 +32,16 @@ public class MapWrapperTest {
 
     @Test
     public void put() {
+        for (int i = 0; i < 55; i++) {
+            equalsMap.put(new TestClass("asdasd" + i + ""), i + "ASDASD");
+            equalsMap.put(new TestClass("asdqwe12" + i + "1"), i + "ASDASD1");
+            equalsMap.put(new TestClass("asd2131" + i + "2"), i + "ASDASD2");
+
+            mapWrapper.put(new TestClass("asdasd" + i + ""), i + "ASDASD");
+            mapWrapper.put(new TestClass("asdqwe12" + i + "1"), i + "ASDASD1");
+            mapWrapper.put(new TestClass("asd2131" + i + "2"), i + "ASDASD2");
+        }
+
         assertEquals(mapWrapper.toString(), equalsMap.toString());
     }
 
@@ -48,8 +58,13 @@ public class MapWrapperTest {
     @Test
     public void putAll() {
         for (int i = 0; i < 20; i++) {
-            equalsMap.putAll(PERSON_MAP);
-            mapWrapper.putAll(PERSON_MAP);
+            HashMap<TestClass, String> map = new HashMap<>();
+            map.put(new TestClass(i + ""), i + "ASDASD");
+            map.put(new TestClass(i + "1"), i + "ASDASD1");
+            map.put(new TestClass(i + "2"), i + "ASDASD2");
+
+            equalsMap.putAll(map);
+            mapWrapper.putAll(map);
         }
 
         assertEquals(equalsMap.toString(), mapWrapper.toString());

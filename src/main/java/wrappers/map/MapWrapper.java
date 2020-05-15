@@ -12,13 +12,12 @@ public class MapWrapper<K extends Serializable, V extends Serializable> implemen
 
 
     private Map<K, V> map;
-    private List<SerializableEntry<K, V>> entries; // SerializableEntry сравниваются только по ключам
+    private List<SerializableEntry<K, V>> entries = new ArrayList<>();; // SerializableEntry сравниваются только по ключам
 
 
     private CollectionFilesManager<SerializableEntry<K, V>> mapManager;
 
     public MapWrapper(Map<K, V> map, File directory, String prefix) {
-        entries = new ArrayList<>();
         this.map = map;
         mapManager = new CollectionFilesManager<>(entries, directory, prefix, 50, 20);
 
@@ -26,7 +25,6 @@ public class MapWrapper<K extends Serializable, V extends Serializable> implemen
     }
 
     public MapWrapper(Map<K, V> map, File directory, String prefix, int fileObjectCapacity, int changesCounter) {
-        entries = new ArrayList<>();
         this.map = map;
         mapManager = new CollectionFilesManager<>(entries, directory, prefix, fileObjectCapacity, changesCounter);
 
@@ -50,7 +48,7 @@ public class MapWrapper<K extends Serializable, V extends Serializable> implemen
 
     @Override
     public V remove(Object key) {
-        int index = entries.indexOf(new SerializableEntry<K, V>((K) key, null));
+        int index = entries.indexOf(new SerializableEntry<>((K) key, null));
         V t = map.remove(key);
         if (t != null) {
             entries.remove(index);

@@ -23,9 +23,16 @@ public class SetWrapperTest {
 
     @Test
     public void add() {
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 55; i++) {
             equalsSet.add(TEST_CLASS_LIST.get(0));
+            equalsSet.add(new TestClass(i + ""));
+            equalsSet.add(new TestClass(i + "123"));
+            equalsSet.add(new TestClass(i + "432"));
+
             setWrapper.add(TEST_CLASS_LIST.get(0));
+            setWrapper.add(new TestClass(i + ""));
+            setWrapper.add(new TestClass(i + "123"));
+            setWrapper.add(new TestClass(i + "432"));
         }
 
         assertEquals(equalsSet.toString(), setWrapper.toString());
@@ -42,10 +49,12 @@ public class SetWrapperTest {
     }
 
     @Test
-    public void addAll() {
-        for (int i = 0; i < 20; i++) {
-            equalsSet.addAll(TEST_CLASS_LIST);
-            setWrapper.addAll(TEST_CLASS_LIST);
+    public void addAll() { // Вообще чето не понятное, при выгрузке файл из 33 элементов один в коллекции
+        for (int i = 0; i < 55; i++) {
+            equalsSet.addAll(FIRST_THREE_PEOPLE);
+            setWrapper.addAll(FIRST_THREE_PEOPLE);
+            equalsSet.addAll(Arrays.asList(new TestClass(i + ""), new TestClass(i + "1"), new TestClass(i + "2")));
+            setWrapper.addAll(Arrays.asList(new TestClass(i + ""), new TestClass(i + "1"), new TestClass(i + "2")));
         }
 
         assertEquals(equalsSet.toString(), setWrapper.toString());
@@ -99,7 +108,7 @@ public class SetWrapperTest {
             setWrapper.retainAll(Arrays.asList(otherTestClassList.get(3), otherTestClassList.get(4)));
         }
 
-        assertEquals(equalsSet.toString() , setWrapper.toString());
+        assertEquals(equalsSet.toString(), setWrapper.toString());
     }
 
     @Test
@@ -118,7 +127,7 @@ public class SetWrapperTest {
         eqIter.next();
         wrapIter.next();
 
-        assertEquals(equalsSet.toString() , setWrapper.toString());
+        assertEquals(equalsSet.toString(), setWrapper.toString());
     }
 
     @Test
@@ -126,7 +135,7 @@ public class SetWrapperTest {
         equalsSet.removeIf(p -> p.getTitle().equals("first") || p.getTitle().equals("second"));
         setWrapper.removeIf(p -> p.getTitle().equals("first") || p.getTitle().equals("second"));
 
-        assertEquals(equalsSet.toString() , setWrapper.toString());
+        assertEquals(equalsSet.toString(), setWrapper.toString());
     }
 
     @After
