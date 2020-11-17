@@ -3,6 +3,7 @@ package wrappers.map;
 import java.io.Serializable;
 import java.util.Objects;
 
+/// \brief Сериализумая обертка над вхождением в Map
 public class SerializableEntry<K extends Serializable,V extends Serializable> implements Serializable {
     private K key;
     private V value;

@@ -6,6 +6,10 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+/// \ingroup wrappers
+
+
+/// \brief Реализация коллекции Set, сохраняющейся в файловую систему
 public class SetWrapper<T extends Serializable> implements Set<T> {
     private Set<T> set;
 
@@ -34,16 +38,6 @@ public class SetWrapper<T extends Serializable> implements Set<T> {
         }
         return true;
     }
-
-//    private int getSetPos(T t) {
-//        int c = 0;
-//        Iterator<T> iterator = set.iterator();
-//        while (!iterator.next().equals(t)) {
-//            if (!iterator.hasNext()) return -1;
-//            c++;
-//        }
-//        return c;
-//    }
 
     @Override
     public boolean remove(Object o) {

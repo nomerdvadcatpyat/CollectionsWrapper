@@ -7,6 +7,11 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
+/// \defgroup wrappers Сохраняемые коллекции
+
+/// \ingroup wrappers
+
+/// \brief Реализация коллекции List, сохраняющейся в файловую систему
 public class ListWrapper<T extends Serializable> extends AbstractList<T> implements List<T> {
     private List<T> list; // внутренняя реализация листа
     private CollectionFilesManager<T> manager; // менеджер для обновления файлов коллекции
@@ -121,7 +126,6 @@ public class ListWrapper<T extends Serializable> extends AbstractList<T> impleme
         @Override
         public void forEachRemaining(Consumer<? super T> action) {
             iterator.forEachRemaining(action);
-            //manager.checkDifference(list);
         }
     }
 
@@ -207,7 +211,6 @@ public class ListWrapper<T extends Serializable> extends AbstractList<T> impleme
         @Override
         public void forEachRemaining(Consumer<? super T> action) {
             listIterator.forEachRemaining(action);
-            //manager.checkDifference(list);
         }
     }
 

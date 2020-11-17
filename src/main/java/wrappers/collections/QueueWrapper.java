@@ -6,6 +6,9 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+/// \ingroup wrappers
+
+/// \brief Реализация коллекции Set, сохраняющейся в файловую систему
 public class QueueWrapper<T extends Serializable> implements Queue<T> {
     private Queue<T> queue;
     private CollectionFilesManager<T> manager;
@@ -29,8 +32,7 @@ public class QueueWrapper<T extends Serializable> implements Queue<T> {
 
     @Override
     public boolean remove(Object o) {
-        List<T> temp = new ArrayList<>(queue);
-        int index = temp.indexOf(o);
+        int index =  new ArrayList<>(queue).indexOf(o);
 
         queue.remove(o);
 
@@ -118,7 +120,6 @@ public class QueueWrapper<T extends Serializable> implements Queue<T> {
         @Override
         public void forEachRemaining(Consumer<? super T> action) {
             iterator.forEachRemaining(action);
-            //manager.checkDifference(queue);
         }
     }
 

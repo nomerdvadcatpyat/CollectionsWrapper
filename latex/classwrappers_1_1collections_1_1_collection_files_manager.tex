@@ -1,0 +1,187 @@
+\hypertarget{classwrappers_1_1collections_1_1_collection_files_manager}{}\doxysection{Шаблон класса wrappers.\+collections.\+Collection\+Files\+Manager$<$ T extends Serializable $>$}
+\label{classwrappers_1_1collections_1_1_collection_files_manager}\index{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$@{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$}}
+
+
+Класс, отвечающий за управление файлами коллекций.  
+
+
+\doxysubsection*{Открытые члены}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classwrappers_1_1collections_1_1_collection_files_manager_a5c23a022613a3abf08fff58b5e48ac97}{Collection\+Files\+Manager}} (Collection$<$ T $>$ collection, File directory, String prefix, int file\+Object\+Capacity, int changes\+Counter)
+\item 
+void \mbox{\hyperlink{classwrappers_1_1collections_1_1_collection_files_manager_a9b4ce228e11280241014225ca4fee6f8}{add\+In\+End}} (T element)
+\begin{DoxyCompactList}\small\item\em Добавление 1 элемента в конец коллекции в файлах. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classwrappers_1_1collections_1_1_collection_files_manager_ae70ba9bc1bbdccf60a9cff842eccb99e}{add\+All\+In\+End}} (Collection$<$? extends T $>$ inserted\+Collection)
+\begin{DoxyCompactList}\small\item\em Добавление коллекции в конец коллекции в файлах. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classwrappers_1_1collections_1_1_collection_files_manager_a94efb83607346259608eef1da5b0e84d}{remove}} (int index)
+\begin{DoxyCompactList}\small\item\em Удаление элемента по индексу. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classwrappers_1_1collections_1_1_collection_files_manager_a669f5fcae911a27d8d98c0dc7575fb2e}{add\+All}} (int index, Collection$<$? extends T $>$ inserted\+Collection)
+\begin{DoxyCompactList}\small\item\em Вставка коллекции по индексу. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classwrappers_1_1collections_1_1_collection_files_manager_ad87bbdac1d30ae5ba47feee5b2a2b706}{add}} (int index, T element)
+\begin{DoxyCompactList}\small\item\em Вставка 1 элемента по индексу. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classwrappers_1_1collections_1_1_collection_files_manager_ac12a2df621e5b846d1cd4af5e3e5e8b5}{set}} (int index, T element)
+\begin{DoxyCompactList}\small\item\em Изменение элемента по индексу \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classwrappers_1_1collections_1_1_collection_files_manager_a199da6a3a6565ae6dc349564e4ea8fef}{replace\+All}} (Collection$<$ T $>$ new\+Collection)
+\begin{DoxyCompactList}\small\item\em Замена всех вхождений коллекции. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classwrappers_1_1collections_1_1_collection_files_manager_af566a33c4c6283ebcb873b8f6e039fa8}{remove\+Difference}} (Collection$<$ T $>$ collection)
+\begin{DoxyCompactList}\small\item\em Удаление различий у коллекции из файлов и измененной коллекции. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Подробное описание}
+Класс, отвечающий за управление файлами коллекций. 
+
+\doxysubsection{Конструктор(ы)}
+\mbox{\Hypertarget{classwrappers_1_1collections_1_1_collection_files_manager_a5c23a022613a3abf08fff58b5e48ac97}\label{classwrappers_1_1collections_1_1_collection_files_manager_a5c23a022613a3abf08fff58b5e48ac97}} 
+\index{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$@{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$}!CollectionFilesManager@{CollectionFilesManager}}
+\index{CollectionFilesManager@{CollectionFilesManager}!wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$@{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$}}
+\doxysubsubsection{\texorpdfstring{CollectionFilesManager()}{CollectionFilesManager()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classwrappers_1_1collections_1_1_collection_files_manager}{wrappers.\+collections.\+Collection\+Files\+Manager}}$<$ T extends Serializable $>$.\mbox{\hyperlink{classwrappers_1_1collections_1_1_collection_files_manager}{Collection\+Files\+Manager}} (\begin{DoxyParamCaption}\item[{Collection$<$ T $>$}]{collection,  }\item[{File}]{directory,  }\item[{String}]{prefix,  }\item[{int}]{file\+Object\+Capacity,  }\item[{int}]{changes\+Counter }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Аргументы}
+{\em collection} & Объект стандартной реализации нужной коллекции \\
+\hline
+{\em directory} & Директория, в которую будут размещены файлы \\
+\hline
+{\em prefix} & Префикс генерируемых файлов для переданной коллекции \\
+\hline
+{\em file\+Object\+Capacity} & Максимальный размер одного файла с объектами коллекции \\
+\hline
+{\em changes\+Counter} & Количество изменений коллекции, после которых нужно объеденить файлы с малым количеством элементов \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Методы}
+\mbox{\Hypertarget{classwrappers_1_1collections_1_1_collection_files_manager_ad87bbdac1d30ae5ba47feee5b2a2b706}\label{classwrappers_1_1collections_1_1_collection_files_manager_ad87bbdac1d30ae5ba47feee5b2a2b706}} 
+\index{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$@{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$}!add@{add}}
+\index{add@{add}!wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$@{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}}
+{\footnotesize\ttfamily void \mbox{\hyperlink{classwrappers_1_1collections_1_1_collection_files_manager}{wrappers.\+collections.\+Collection\+Files\+Manager}}$<$ T extends Serializable $>$.add (\begin{DoxyParamCaption}\item[{int}]{index,  }\item[{T}]{element }\end{DoxyParamCaption})}
+
+
+
+Вставка 1 элемента по индексу. 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em index} & индекс \\
+\hline
+{\em element} & элемент, который нужно вставить\\
+\hline
+\end{DoxyParams}
+Все то же самое, что и со вставкой коллекции \mbox{\Hypertarget{classwrappers_1_1collections_1_1_collection_files_manager_a669f5fcae911a27d8d98c0dc7575fb2e}\label{classwrappers_1_1collections_1_1_collection_files_manager_a669f5fcae911a27d8d98c0dc7575fb2e}} 
+\index{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$@{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$}!addAll@{addAll}}
+\index{addAll@{addAll}!wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$@{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$}}
+\doxysubsubsection{\texorpdfstring{addAll()}{addAll()}}
+{\footnotesize\ttfamily void \mbox{\hyperlink{classwrappers_1_1collections_1_1_collection_files_manager}{wrappers.\+collections.\+Collection\+Files\+Manager}}$<$ T extends Serializable $>$.add\+All (\begin{DoxyParamCaption}\item[{int}]{index,  }\item[{Collection$<$? extends T $>$}]{inserted\+Collection }\end{DoxyParamCaption})}
+
+
+
+Вставка коллекции по индексу. 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em index} & индекс, начиная с которого нужно вставить коллекцию \\
+\hline
+{\em inserted\+Collection} & вставляемая коллекция\\
+\hline
+\end{DoxyParams}
+Получает файл по индексу. Если он не пустой, загружает из него коллекцию. Получает индекс относительно этого файла и добавляет вставленную коллекцию в коллекцию из файла. Вычисляет сколько элементов не влезло в файл, заполняет файл. Пока остаток $>$ 0\+: 1) Если остаток залезет в следующий файл, то засовывает его туда. 2) Если не залезет в след файл, то создает между ними еще один (чтобы не переписывать много файлов) и заполняет его. 3) Обновляет остаток и текущий файл = следующий файл. \mbox{\Hypertarget{classwrappers_1_1collections_1_1_collection_files_manager_ae70ba9bc1bbdccf60a9cff842eccb99e}\label{classwrappers_1_1collections_1_1_collection_files_manager_ae70ba9bc1bbdccf60a9cff842eccb99e}} 
+\index{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$@{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$}!addAllInEnd@{addAllInEnd}}
+\index{addAllInEnd@{addAllInEnd}!wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$@{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$}}
+\doxysubsubsection{\texorpdfstring{addAllInEnd()}{addAllInEnd()}}
+{\footnotesize\ttfamily void \mbox{\hyperlink{classwrappers_1_1collections_1_1_collection_files_manager}{wrappers.\+collections.\+Collection\+Files\+Manager}}$<$ T extends Serializable $>$.add\+All\+In\+End (\begin{DoxyParamCaption}\item[{Collection$<$? extends T $>$}]{inserted\+Collection }\end{DoxyParamCaption})}
+
+
+
+Добавление коллекции в конец коллекции в файлах. 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em inserted\+Collection} & Коллекция, которую нужно добавить к существующей\\
+\hline
+\end{DoxyParams}
+Получает последний неполный файл. Если коллекция в файле не пустая, то загружает ее. Добавляет к текущей коллекции в файле вставляемую и заполняет файл. Пока остались элементы, заполняет новые файлы. \mbox{\Hypertarget{classwrappers_1_1collections_1_1_collection_files_manager_a9b4ce228e11280241014225ca4fee6f8}\label{classwrappers_1_1collections_1_1_collection_files_manager_a9b4ce228e11280241014225ca4fee6f8}} 
+\index{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$@{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$}!addInEnd@{addInEnd}}
+\index{addInEnd@{addInEnd}!wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$@{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$}}
+\doxysubsubsection{\texorpdfstring{addInEnd()}{addInEnd()}}
+{\footnotesize\ttfamily void \mbox{\hyperlink{classwrappers_1_1collections_1_1_collection_files_manager}{wrappers.\+collections.\+Collection\+Files\+Manager}}$<$ T extends Serializable $>$.add\+In\+End (\begin{DoxyParamCaption}\item[{T}]{element }\end{DoxyParamCaption})}
+
+
+
+Добавление 1 элемента в конец коллекции в файлах. 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em element} & Элемент, который нужно добавить в коллекцию\\
+\hline
+\end{DoxyParams}
+Получает последний неполный файл. Если он не пустой, то загружает из него коллекцию и добавляет к ней элемент. Если пустой, то только добавляет новый элемент. Записывает коллекцию в файл. \mbox{\Hypertarget{classwrappers_1_1collections_1_1_collection_files_manager_a94efb83607346259608eef1da5b0e84d}\label{classwrappers_1_1collections_1_1_collection_files_manager_a94efb83607346259608eef1da5b0e84d}} 
+\index{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$@{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$}!remove@{remove}}
+\index{remove@{remove}!wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$@{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$}}
+\doxysubsubsection{\texorpdfstring{remove()}{remove()}}
+{\footnotesize\ttfamily void \mbox{\hyperlink{classwrappers_1_1collections_1_1_collection_files_manager}{wrappers.\+collections.\+Collection\+Files\+Manager}}$<$ T extends Serializable $>$.remove (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Удаление элемента по индексу. 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em index} & индекс удаляемого элемента\\
+\hline
+\end{DoxyParams}
+Получает файл, в котором лежит удаляемый элемент. Загружает из него коллекцию, получает индекс относительно этой коллекции. Удаляет элемент из этой коллекции и записывает ее в файл. \mbox{\Hypertarget{classwrappers_1_1collections_1_1_collection_files_manager_af566a33c4c6283ebcb873b8f6e039fa8}\label{classwrappers_1_1collections_1_1_collection_files_manager_af566a33c4c6283ebcb873b8f6e039fa8}} 
+\index{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$@{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$}!removeDifference@{removeDifference}}
+\index{removeDifference@{removeDifference}!wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$@{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$}}
+\doxysubsubsection{\texorpdfstring{removeDifference()}{removeDifference()}}
+{\footnotesize\ttfamily void \mbox{\hyperlink{classwrappers_1_1collections_1_1_collection_files_manager}{wrappers.\+collections.\+Collection\+Files\+Manager}}$<$ T extends Serializable $>$.remove\+Difference (\begin{DoxyParamCaption}\item[{Collection$<$ T $>$}]{collection }\end{DoxyParamCaption})}
+
+
+
+Удаление различий у коллекции из файлов и измененной коллекции. 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em collection} & измененная коллекция \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classwrappers_1_1collections_1_1_collection_files_manager_a199da6a3a6565ae6dc349564e4ea8fef}\label{classwrappers_1_1collections_1_1_collection_files_manager_a199da6a3a6565ae6dc349564e4ea8fef}} 
+\index{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$@{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$}!replaceAll@{replaceAll}}
+\index{replaceAll@{replaceAll}!wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$@{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$}}
+\doxysubsubsection{\texorpdfstring{replaceAll()}{replaceAll()}}
+{\footnotesize\ttfamily void \mbox{\hyperlink{classwrappers_1_1collections_1_1_collection_files_manager}{wrappers.\+collections.\+Collection\+Files\+Manager}}$<$ T extends Serializable $>$.replace\+All (\begin{DoxyParamCaption}\item[{Collection$<$ T $>$}]{new\+Collection }\end{DoxyParamCaption})}
+
+
+
+Замена всех вхождений коллекции. 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em new\+Collection} & новая коллекция\\
+\hline
+\end{DoxyParams}
+Очищает коллекцию в файлах и засовывает новую. \mbox{\Hypertarget{classwrappers_1_1collections_1_1_collection_files_manager_ac12a2df621e5b846d1cd4af5e3e5e8b5}\label{classwrappers_1_1collections_1_1_collection_files_manager_ac12a2df621e5b846d1cd4af5e3e5e8b5}} 
+\index{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$@{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$}!set@{set}}
+\index{set@{set}!wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$@{wrappers.collections.CollectionFilesManager$<$ T extends Serializable $>$}}
+\doxysubsubsection{\texorpdfstring{set()}{set()}}
+{\footnotesize\ttfamily void \mbox{\hyperlink{classwrappers_1_1collections_1_1_collection_files_manager}{wrappers.\+collections.\+Collection\+Files\+Manager}}$<$ T extends Serializable $>$.set (\begin{DoxyParamCaption}\item[{int}]{index,  }\item[{T}]{element }\end{DoxyParamCaption})}
+
+
+
+Изменение элемента по индексу 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em index} & индекс элемента, который нужно заменить \\
+\hline
+{\em element} & элемент, которым нужно заменить старый\\
+\hline
+\end{DoxyParams}
+Получает коллекцию из файла, где лежит элемент по индексу. Кастит ее к листу, делает сет и загружает обратно. 
+
+Объявления и описания членов класса находятся в файле\+:\begin{DoxyCompactItemize}
+\item 
+src/main/java/wrappers/collections/Collection\+Files\+Manager.\+java\end{DoxyCompactItemize}

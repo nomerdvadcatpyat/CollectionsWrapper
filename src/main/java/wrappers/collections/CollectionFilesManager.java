@@ -3,14 +3,27 @@ package wrappers.collections;
 import java.io.*;
 import java.util.*;
 
+/// \defgroup cfs Настройки файлов коллекций
+
+/// \ingroup cfs
+
+/// \brief Класс, отвечающий за управление файлами коллекций.
 public class CollectionFilesManager<T extends Serializable> {
-    private List<CollectionFileSettings> CFSCollection = new ArrayList<>();
+    private List<CollectionFileSettings> CFSCollection = new ArrayList<>(); ///< Коллекция конфигурацонных объектов, связанных с файлами коллекции
     private String prefix;
     private File directory;
-    private File fileWithCollectionFiles;
+    private File fileWithCollectionFiles; ///< Файл, в котором содержатся пути до файлов с частями коллекции
     private int fileObjectCapacity;
     private int changesCounter;
 
+    /**
+     *
+     * @param collection Объект стандартной реализации нужной коллекции
+     * @param directory Директория, в которую будут размещены файлы
+     * @param prefix Префикс генерируемых файлов для переданной коллекции
+     * @param fileObjectCapacity Максимальный размер одного файла с объектами коллекции
+     * @param changesCounter Количество изменений коллекции, после которых нужно объеденить файлы с малым количеством элементов
+     */
     public CollectionFilesManager(Collection<T> collection, File directory, String prefix, int fileObjectCapacity, int changesCounter) {
         this.fileObjectCapacity = fileObjectCapacity;
         this.changesCounter = changesCounter;
@@ -25,10 +38,13 @@ public class CollectionFilesManager<T extends Serializable> {
     }
 
 
-    /* Добавление 1 элемента в конец коллекции в файлах.
-     * Получам последний неполный файл. Если он не пустой, то загружаем из него коллекцию и добавляем к ней элемент.
-     * Если пустой, то только добавляем новый элемент.
-     * Записываем коллекцию в файл.*/
+    /** \brief Добавление 1 элемента в конец коллекции в файлах.
+     *
+     * @param element Элемент, который нужно добавить в коллекцию
+     *
+     * Получает последний неполный файл. Если он не пустой, то загружает из него коллекцию и добавляет к ней элемент.
+     * Если пустой, то только добавляет новый элемент.
+     * Записывает коллекцию в файл.*/
     public void addInEnd(T element) {
         CollectionFileSettings lastCFS = getLastCFS();
         Collection<T> fileCollection = new ArrayList<>();
@@ -47,11 +63,14 @@ public class CollectionFilesManager<T extends Serializable> {
         optimizeAndWriteInFileCFSCollection();
     }
 
-    /* Добавление коллекции в конец коллекции в файлах.
-     * Получаем последний неполный файл.
-     * Если коллекция в файле не пустая, то загрузить ее.
-     * Добавляем к текущей коллекции в файле вставляемую и заполняем файл.
-     * Пока остались элементы, заполняем новые файлы.*/
+    /** \brief Добавление коллекции в конец коллекции в файлах.
+     *
+     * @param insertedCollection Коллекция, которую нужно добавить к существующей
+     *
+     * Получает последний неполный файл.
+     * Если коллекция в файле не пустая, то загружает ее.
+     * Добавляет к текущей коллекции в файле вставляемую и заполняет файл.
+     * Пока остались элементы, заполняет новые файлы.*/
     public void addAllInEnd(Collection<? extends T> insertedCollection) {
         CollectionFileSettings lastCFS = getLastCFS();
         if (lastCFS.getSize() == fileObjectCapacity) {
@@ -78,10 +97,13 @@ public class CollectionFilesManager<T extends Serializable> {
     }
 
 
-    /* Удалить элемент по индексу.
-     * Получаем файл, в котором лежит удаляемый элемент.
-     * Загружаем из него коллекцию, получаем индекс относительно этой коллекции.
-     * Удаляем элемент из этой коллекции и записываем ее в файл.*/
+    /** \brief Удаление элемента по индексу.
+     *
+     * @param index индекс удаляемого элемента
+     *
+     * Получает файл, в котором лежит удаляемый элемент.
+     * Загружает из него коллекцию, получает индекс относительно этой коллекции.
+     * Удаляет элемент из этой коллекции и записывает ее в файл.*/
     public void remove(int index) {
         CollectionFileSettings cfs = getCFSWithElement(index);
         Collection<T> fileCollection = loadSubCollection(cfs);
@@ -101,14 +123,18 @@ public class CollectionFilesManager<T extends Serializable> {
         optimizeAndWriteInFileCFSCollection();
     }
 
-    /* Вставить коллекцию по индексу.
-     * Получаем файл по индексу. Если он не пустой, загружаем из него коллекцию.
-     * Получаем индекс относительно этого файла и добавляем вставленную коллекцию в коллекцию из файла.
-     * Вычисляем сколько элементов не влезло в файл, заполняем файл.
+    /** \brief Вставка коллекции по индексу.
+     *
+     * @param index индекс, начиная с которого нужно вставить коллекцию
+     * @param insertedCollection вставляемая коллекция
+     *
+     * Получает файл по индексу. Если он не пустой, загружает из него коллекцию.
+     * Получает индекс относительно этого файла и добавляет вставленную коллекцию в коллекцию из файла.
+     * Вычисляет сколько элементов не влезло в файл, заполняет файл.
      * Пока остаток > 0:
-     *   1) Если остаток залезет в следующий файл, то засовываем его туда.
-     *   2) Если не залезет в след файл, то создадим между ними еще один (чтобы не переписывать много файлов) и заполним его.
-     *   3) обновляем остаток и текущий файл = следующий файл.
+     *   1) Если остаток залезет в следующий файл, то засовывает его туда.
+     *   2) Если не залезет в след файл, то создает между ними еще один (чтобы не переписывать много файлов) и заполняет его.
+     *   3) Обновляет остаток и текущий файл = следующий файл.
      * */
     public void addAll(int index, Collection<? extends T> insertedCollection) {
         if (index == getSumOfAllFilesSizes())
@@ -156,14 +182,18 @@ public class CollectionFilesManager<T extends Serializable> {
         optimizeAndWriteInFileCFSCollection();
     }
 
-    /*Вставка 1 элемента по индексу.
+    /** \brief Вставка 1 элемента по индексу.
+     *
+     * @param index индекс
+     * @param element элемент, который нужно вставить
+     *
      * Все то же самое, что и со вставкой коллекции */
     public void add(int index, T element) {
         addAll(index, Collections.singletonList(element));
     }
 
 
-    /* Очистить все.
+    /** \brief Удаление всех элементов из коллекции
      * Выставляем объектам файлов размер 0 и в optimizeFilesSettingsCollection они вычищаются. */
     private void clearAll() {
         for (CollectionFileSettings cfs : CFSCollection) cfs.setSize(0);
@@ -173,9 +203,13 @@ public class CollectionFilesManager<T extends Serializable> {
     }
 
 
-    /* Вставка коллекции по индексу
-     * Получаем коллекцию из файла, где лежит элемент по индексу.
-     * Кастим ее к листу, делаем сет и загружаем обратно.
+    /** \brief Изменение элемента по индексу
+     *
+     * @param index индекс элемента, который нужно заменить
+     * @param element элемент, которым нужно заменить старый
+     *
+     * Получает коллекцию из файла, где лежит элемент по индексу.
+     * Кастит ее к листу, делает сет и загружает обратно.
      * */
     public void set(int index, T element) {
         CollectionFileSettings cfs = getCFSWithElement(index);
@@ -187,8 +221,11 @@ public class CollectionFilesManager<T extends Serializable> {
         fillFile(cfs, fileCollection.iterator(), cfs.getSize());
     }
 
-    /* Заменить все вхождения.
-     * Очищаем коллекцию в файлах и засовываем новую.
+    /** \brief Замена всех вхождений коллекции.
+     *
+     * @param newCollection новая коллекция
+     *
+     * Очищает коллекцию в файлах и засовывает новую.
      * */
     public void replaceAll(Collection<T> newCollection) {
         clearAll();
@@ -196,7 +233,11 @@ public class CollectionFilesManager<T extends Serializable> {
     }
 
 
-    /* Удаление различий у коллекции из файлов и измененной коллекции. */
+    /** \brief Удаление различий у коллекции из файлов и измененной коллекции.
+     *
+     * @param collection измененная коллекция
+     *
+     * */
     public void removeDifference(Collection<T> collection) {
         List<T> copyCollection = new ArrayList<>(collection);
 
@@ -217,7 +258,7 @@ public class CollectionFilesManager<T extends Serializable> {
 
     // ВНУТРЕННИЕ МЕТОДЫ ДЛЯ РАБОТЫ С ФАЙЛАМИ КОЛЛЕКЦИИ
 
-    /* Удаление различий у коллекции из файла и измененной коллекции.
+    /** \brief Удаление различий у коллекции из файла и измененной коллекции.
      * subCollection - подколлекция измененной коллекции
      * если хэши у старой коллекции из файла и подколлекции измененной коллекции не совпали, то записываем в файл измененную подколлекцию
      * */

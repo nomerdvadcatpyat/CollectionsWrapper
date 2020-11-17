@@ -13,11 +13,11 @@ import static wrappers.WrappersTestsConstants.*;
 public class SetWrapperTest {
 
     private Set<TestClass> setWrapper;
-    private Set<TestClass> equalsSet = new HashSet<>();
+    private Set<TestClass> equalsSet = new LinkedHashSet<>();
 
     @Before
     public void prepare() {
-        setWrapper = new SetWrapper<>(new HashSet<>(), DIRECTORY, PREFIX, 50, 20);
+        setWrapper = new SetWrapper<>(new LinkedHashSet<>(), DIRECTORY, PREFIX, 50, 20);
         simpleFillCollections(equalsSet, setWrapper);
     }
 
@@ -141,10 +141,10 @@ public class SetWrapperTest {
     @After
     public void checkLoad() {
         try {
-            setWrapper = new SetWrapper<>(new HashSet<>(), DIRECTORY, PREFIX, 50, 20);
+            setWrapper = new SetWrapper<>(new LinkedHashSet<>(), DIRECTORY, PREFIX, 50, 20);
             assertEquals(equalsSet.toString(), setWrapper.toString());
         } finally {
-            equalsSet = new HashSet<>();
+            equalsSet = new LinkedHashSet<>();
             deleteFiles();
         }
     }

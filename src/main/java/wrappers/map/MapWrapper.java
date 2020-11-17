@@ -8,6 +8,10 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+/// \ingroup wrappers
+
+
+/// \brief Реализация ассоциативного массива Map, схораняющегося в файловую систему
 public class MapWrapper<K extends Serializable, V extends Serializable> implements Map<K, V> {
 
 
